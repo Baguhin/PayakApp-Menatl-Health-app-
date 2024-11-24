@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1064925979160",
+    "project_id": "tanggulo-payakapp",
+    "storage_bucket": "tanggulo-payakapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064925979160:android:f1fc12150b686056b0d96d",
+        "android_client_info": {
+          "package_name": "com.example.tangullo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOLh6VCu4uBL7ErbLNRoT2axw3iPklRcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

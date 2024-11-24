@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "398180714888",
+    "project_id": "mental-health-9b3bb",
+    "storage_bucket": "mental-health-9b3bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398180714888:android:afc9d0844175ce6092923d",
+        "android_client_info": {
+          "package_name": "com.example.tangullo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHbKOQS-2FXS9xnZJpS2hyYGWo2Zev9RA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
