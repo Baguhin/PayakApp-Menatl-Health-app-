@@ -13,7 +13,7 @@ import 'package:tangullo/ui/views/profile/profile_view.dart';
 import 'package:tangullo/ui/views/login/login_view.dart';
 import 'package:tangullo/ui/views/signup/signup_view.dart';
 import 'package:tangullo/ui/views/splashscreen/splashscreen_view.dart';
-import 'package:tangullo/ui/views/therapist/therapist_view.dart';
+
 import 'package:tangullo/ui/views/chatscreen/chatscreen_view.dart';
 import 'package:tangullo/ui/views/addfriends/addfriends_view.dart';
 import 'package:tangullo/ui/views/meditation/meditation_view.dart';
@@ -33,7 +33,6 @@ import 'package:tangullo/ui/views/journalizing/journalizing_view.dart';
     MaterialRoute(page: LoginView),
     MaterialRoute(page: SignupView),
     MaterialRoute(page: SplashscreenView),
-    MaterialRoute(page: TherapistView),
     MaterialRoute(page: ChatscreenView),
     MaterialRoute(page: AddfriendsView),
     MaterialRoute(page: MeditationView),

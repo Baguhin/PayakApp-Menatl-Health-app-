@@ -21,7 +21,7 @@ class HomepageViewModel extends BaseViewModel {
     _isLoading = true; // Start loading
     notifyListeners();
     // Simulate network delay
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     _isLoading = false; // End loading
     notifyListeners();
   }
@@ -29,7 +29,7 @@ class HomepageViewModel extends BaseViewModel {
   Future<void> fetchDoctorData() async {
     _isLoading = true;
     notifyListeners();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     _isLoading = false;
     notifyListeners();
   }
@@ -37,7 +37,7 @@ class HomepageViewModel extends BaseViewModel {
   Future<void> fetchMessagesData() async {
     _isLoading = true;
     notifyListeners();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     _isLoading = false;
     notifyListeners();
   }
@@ -45,7 +45,7 @@ class HomepageViewModel extends BaseViewModel {
   Future<void> fetchSettingsData() async {
     _isLoading = true;
     notifyListeners();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     _isLoading = false;
     notifyListeners();
   }

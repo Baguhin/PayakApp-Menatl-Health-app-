@@ -1,250 +1,218 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tangullo/ui/views/signup/signup_viewmodel.dart';
-import 'package:tangullo/ui/views/login/login_view.dart'; // Ensure this import is added
+import 'package:tangullo/ui/views/login/login_view.dart';
 
 class SignupView extends StatelessWidget {
   const SignupView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
     return ViewModelBuilder<SignupViewModel>.reactive(
       viewModelBuilder: () => SignupViewModel(),
       builder: (context, model, child) {
-        return Scaffold(
-          backgroundColor: Colors.lightBlue[50], // Matching background color
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: MediaQuery.of(context).size.height *
-                      0.1), // Responsive padding
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Image at the top
-                  Image.asset(
-                    'assets/img/c3.png', // Update with your image path
-                    height: 150, // Set an appropriate height
-                    fit: BoxFit.contain, // Adjust the fit
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Signup Header
-                  const Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Terms and Privacy Policy
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                    child: Text(
-                      'By signing up you are agreeing to our\nTerms and Privacy Policy',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Username Text Field
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Username',
-                      prefixIcon:
-                          const Icon(Icons.person, color: Colors.indigo),
-                      labelStyle: const TextStyle(color: Colors.indigo),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      model.username = value;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Email Text Field
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Email Address',
-                      prefixIcon: const Icon(Icons.email, color: Colors.indigo),
-                      labelStyle: const TextStyle(color: Colors.indigo),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    onChanged: (value) {
-                      model.email = value;
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Password Text Field
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock, color: Colors.indigo),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          model.showPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.indigo,
-                        ),
-                        onPressed: () {
-                          model.togglePasswordVisibility();
-                        },
-                      ),
-                      labelStyle: const TextStyle(color: Colors.indigo),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    obscureText: !model.showPassword,
-                    onChanged: (value) {
-                      model.password = value;
-                    },
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Sign-up Button
-                  ElevatedButton(
-                    onPressed: () {
-                      model.signup(context); // Pass the context here
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.indigo, // Button color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: model.isBusy
-                        ? const CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          )
-                        : const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color:
-                                  Colors.white, // Changed text color to white
-                            ),
-                          ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Or connect with
-                  const Center(
-                    child: Text(
-                      'Or connect with',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Social Media Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            backgroundColor: Colors.lightBlue[50],
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: mediaQuery.size.width * 0.07),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: Image.asset(
-                            'assets/icons/facebook.png'), // Facebook icon
-                        onPressed: () {
-                          // Handle Facebook signup
-                        },
+                      // Logo Icon
+                      // App Logo
+                      Image.asset(
+                        'assets/images/logo.png',
+                        height: 120, // Slightly bigger logo for emphasis
+                        width: 120,
                       ),
-                      IconButton(
-                        icon: Image.asset(
-                            'assets/icons/instagram.png'), // Instagram icon
-                        onPressed: () {
-                          // Handle Instagram signup
-                        },
+                      const SizedBox(height: 20),
+
+                      // Title
+                      const Text(
+                        'Create Your Account',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                      IconButton(
-                        icon: Image.asset(
-                            'assets/icons/pinterest.png'), // Pinterest icon
-                        onPressed: () {
-                          // Handle Pinterest signup
-                        },
+                      const SizedBox(height: 8),
+
+                      const Text(
+                        'Join PayakApp for a guided mental wellness journey',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
                       ),
-                      IconButton(
-                        icon: Image.asset(
-                            'assets/icons/linkedin.png'), // LinkedIn icon
-                        onPressed: () {
-                          // Handle LinkedIn signup
-                        },
+                      const SizedBox(height: 30),
+
+                      // Signup Card
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 30, horizontal: 25),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // Full Name
+                            TextField(
+                              onChanged: (value) => model.username = value,
+                              decoration: InputDecoration(
+                                labelText: 'Full Name',
+                                prefixIcon: const Icon(Icons.person,
+                                    color: Colors.teal),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.blueGrey[50],
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Email / Mobile
+                            TextField(
+                              onChanged: (value) => model.email = value,
+                              decoration: InputDecoration(
+                                labelText: 'E-mail or Mobile Number',
+                                prefixIcon:
+                                    const Icon(Icons.email, color: Colors.teal),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.blueGrey[50],
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Password
+                            TextField(
+                              onChanged: (value) => model.password = value,
+                              obscureText: !model.showPassword,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon:
+                                    const Icon(Icons.lock, color: Colors.teal),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.blueGrey[50],
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    model.showPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.black54,
+                                  ),
+                                  onPressed: model.togglePasswordVisibility,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Terms & Conditions
+                            const Text(
+                              'By signing up, you agree to our Terms & Conditions and Privacy Policy',
+                              style: TextStyle(
+                                color: Colors.teal,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Sign Up Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 55,
+                              child: ElevatedButton(
+                                onPressed: model.isBusy
+                                    ? null
+                                    : () => model.signup(context),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                                child: model.isBusy
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Text(
+                                        'Continue',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Sign In Link
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Already have an account? ",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const LoginView(
+                                          title: '',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    'Sign In',
+                                    style: TextStyle(
+                                      color: Colors.teal,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+
+                      SizedBox(height: mediaQuery.size.height * 0.05),
                     ],
                   ),
-
-                  const SizedBox(height: 30),
-
-                  // Login Text with custom slide transition
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const LoginView(
-                            title: '',
-                          ),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(
-                                1.0, 0.0); // Start off the screen to the right
-                            const end = Offset
-                                .zero; // End at the original position (center of the screen)
-                            const curve = Curves
-                                .easeInOut; // The easing curve for the transition
-
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
-                            var offsetAnimation = animation.drive(tween);
-
-                            return SlideTransition(
-                                position: offsetAnimation,
-                                child: child); // Slide transition
-                          },
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Already have an account? Login',
-                      style: TextStyle(color: Colors.indigo),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

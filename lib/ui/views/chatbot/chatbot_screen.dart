@@ -150,7 +150,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                           child: CircleAvatar(
                             radius: 20,
                             backgroundImage: AssetImage(
-                                'assets/bot_avatar.png'), // Custom bot avatar
+                                'assets/robot.jpg'), // Custom bot avatar
                           ),
                         ),
                       Flexible(

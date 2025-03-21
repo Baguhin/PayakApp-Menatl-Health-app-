@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'edit_profile_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -64,7 +63,6 @@ class _ProfileViewState extends State<ProfileView> {
                   const SizedBox(height: 20.0),
                   _buildGoalsCard(),
                   const SizedBox(height: 20.0),
-                  _buildEditProfileButton(),
                 ],
               ),
             ),
@@ -270,24 +268,6 @@ class _ProfileViewState extends State<ProfileView> {
                 style: const TextStyle(fontSize: 16)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildEditProfileButton() {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EditProfileView()),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6BBF9B),
-          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-        ),
-        child: const Text('Edit Profile', style: TextStyle(fontSize: 18)),
       ),
     );
   }

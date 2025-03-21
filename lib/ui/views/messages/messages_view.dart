@@ -23,11 +23,10 @@ class MessagesView extends StackedView<MessagesViewModel> {
       appBar: AppBar(
         title: const Text(
           'Mental Health Forum',
-          style: TextStyle(color: Colors.white), // Set text color to white
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme.of(context)
-            .primaryColor, // Use primary color from the app's theme
-        elevation: 4.0, // Adding a subtle shadow for the app bar
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 4.0,
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline, color: Colors.white),
@@ -95,7 +94,7 @@ class MessagesView extends StackedView<MessagesViewModel> {
               controller: messageController,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Colors.grey[200],
                 hintText: 'Type your message...',
                 hintStyle: const TextStyle(color: Colors.grey),
                 border: OutlineInputBorder(
@@ -154,24 +153,28 @@ class MessagesView extends StackedView<MessagesViewModel> {
         alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: isCurrentUser
-                ? Colors.greenAccent[100] // Soft green for sent messages
-                : Colors.grey[200], // Different color for received messages
+            gradient: LinearGradient(
+              colors: isCurrentUser
+                  ? [Colors.greenAccent.shade100, Colors.green.shade300]
+                  : [Colors.blue.shade100, Colors.blue.shade300],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
+                blurRadius: 6,
                 spreadRadius: 2,
               ),
             ],
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
             mainAxisAlignment:
                 isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              if (!isCurrentUser) _buildUserAvatar(username),
+              // Removed Circle Avatar from here
               Expanded(
                 child: Column(
                   crossAxisAlignment: isCurrentUser
@@ -193,29 +196,16 @@ class MessagesView extends StackedView<MessagesViewModel> {
                       _formatTimestamp(message.timestamp),
                       style: TextStyle(
                           fontSize: 12,
-                          color:
-                              Colors.grey[700], // Make timestamp more visible
+                          color: Colors.grey[700],
                           fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
               ),
-              if (isCurrentUser) _buildUserAvatar(username),
+              // Removed Circle Avatar from here
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildUserAvatar(String username) {
-    return CircleAvatar(
-      radius: 20,
-      backgroundColor: Colors.teal,
-      child: Text(
-        username.substring(0, 1).toUpperCase(),
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }

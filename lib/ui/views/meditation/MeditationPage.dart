@@ -75,7 +75,7 @@ class _MeditationPageState extends State<MeditationPage> {
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
-        'Meditation & Yoga',
+        'Meditation',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

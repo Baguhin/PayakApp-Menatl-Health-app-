@@ -13,42 +13,42 @@ class MeditationViewModel extends BaseViewModel {
   void navigateToMeditationPage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(MeditationPage()),
+      _createPageRoute(const MeditationPage()),
     );
   }
 
   void navigateToRelaxPage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(RelaxPage()),
+      _createPageRoute(const RelaxPage()),
     );
   }
 
   void navigateToCalmPage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(CalmExercisePage()),
+      _createPageRoute(const CalmExercisePage()),
     );
   }
 
   void navigateToJournalizing(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(JournalizingView()),
+      _createPageRoute(const JournalizingView()),
     );
   }
 
   void navigateToSleppStories(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(SleepStoriesPage()),
+      _createPageRoute(const SleepStoriesPage()),
     );
   }
 
   void navigateToBreathExercisePage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(BreathExercisePage()),
+      _createPageRoute(const BreathExercisePage()),
     );
   }
 

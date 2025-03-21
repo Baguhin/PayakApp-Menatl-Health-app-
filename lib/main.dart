@@ -1,4 +1,4 @@
-// ignore_for_file: equal_keys_in_map
+// ignore_for_file: equal_keys_in_map, deprecated_member_use
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +9,14 @@ import 'package:tangullo/ui/views/admin/anouncement.dart';
 import 'package:tangullo/ui/views/admin/seminar.dart';
 import 'package:tangullo/ui/views/admin/servises_feedback.dart';
 import 'package:tangullo/ui/views/admin/view_reports_page.dart';
+import 'package:tangullo/ui/views/assesment/adhd.dart';
+import 'package:tangullo/ui/views/assesment/anxietytest.dart';
+import 'package:tangullo/ui/views/assesment/bipolar.dart';
+import 'package:tangullo/ui/views/assesment/depression.dart';
+import 'package:tangullo/ui/views/assesment/eating.dart';
+import 'package:tangullo/ui/views/assesment/ocdtest.dart';
+import 'package:tangullo/ui/views/assesment/ptsd.dart';
+import 'package:tangullo/ui/views/assesment/stress.dart';
 import 'package:tangullo/ui/views/navigation/homepage_view.dart';
 import 'package:tangullo/ui/views/login/login_view.dart';
 import 'package:tangullo/ui/views/signup/signup_view.dart';
@@ -18,7 +26,8 @@ import 'package:tangullo/ui/views/admin/admindashboard.dart';
 import 'package:tangullo/ui/views/admin/manageReport.dart';
 import 'package:tangullo/ui/views/admin/manageseminar.dart';
 import 'package:tangullo/ui/views/superadmin/adminmanagement.dart';
-import 'ui/views/admin/ExpertManagementPage.dart';
+
+import 'ui/views/admin/create_doctor_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,7 +115,7 @@ class MyApp extends StatelessWidget {
         '/adminDashboard': (context) => const AdminDashboardView(),
         '/viewReports': (context) => const ViewReportsPage(),
         '/manageSeminars': (context) => const manageseminarPage(),
-        '/manageVolunteers': (context) => const ExpertManagementPage(),
+        '/manageVolunteers': (context) => const CreateDoctorPage(),
         '/admin-management': (context) => const AdminManagementView(),
         '/view_service_feedback': (context) => const ViewServiceFeedbackPage(),
         '/manageMentalHealthAnnouncements': (context) =>
@@ -114,8 +123,24 @@ class MyApp extends StatelessWidget {
         '/mentalHealthSeminarAnnouncements': (context) =>
             const MentalHealthSeminarAnnouncementsView(),
         '/manageReports': (context) => const managereportPage(),
-        '/messages': (context) =>
-            const MessagesView(), // Route for messaging view
+        '/messages': (context) => const MessagesView(),
+        // Route for messaging view
+
+        '/test/anxiety': (context) =>
+            const AnxietyTestScreen(key: Key("AnxietyTestScreen")),
+        '/test/ocd': (context) =>
+            const OCDTestScreen(key: Key("OCDTestScreen")),
+        '/test/stress': (context) =>
+            const StressTestScreen(key: Key("StressTestScreen")),
+        '/test/bipolar': (context) =>
+            const BipolarTestScreen(key: Key("BipolarTestScreen")),
+        '/test/ptsd': (context) =>
+            const PTSDTestScreen(key: Key("PTSDTestScreen")),
+        '/test/eating': (context) => const EatingDisorderTestScreen(
+            key: Key("EatingDisorderTestScreen")),
+        '/test/adhd': (context) =>
+            const ADHDTestScreen(key: Key("ADHDTestScreen")),
+        '/test/depression': (context) => const DepressionTestScreen(),
       },
     );
   }

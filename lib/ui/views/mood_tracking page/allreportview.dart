@@ -1,180 +1,175 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class MoodReportView extends StatelessWidget {
-  final String userId;
-
+class MoodReportView extends StatefulWidget {
   const MoodReportView(
-      {Key? key,
-      required this.userId,
+      {super.key,
+      required String selectedMood,
       required String mood,
-      required String selectedMood})
-      : super(key: key);
+      required String userId});
+
+  @override
+  _MoodReportViewState createState() => _MoodReportViewState();
+}
+
+class _MoodReportViewState extends State<MoodReportView> {
+  final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Map<String, int> dailyMoodCount = {};
+  final List<String> moods = [
+    "Joy",
+    "Fear",
+    "Disgust",
+    "Anger",
+    "Envy",
+    "Embarrassment",
+    "Ennui",
+    "Nostalgia",
+    "Sadness"
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMoodData();
+  }
+
+  void _fetchMoodData() async {
+    final moodDocs = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('moods')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    final now = DateTime.now();
+    dailyMoodCount = {for (var mood in moods) mood: 0};
+
+    for (var doc in moodDocs.docs) {
+      Timestamp ts = doc['timestamp'];
+      DateTime date = ts.toDate();
+      String mood = doc['mood'];
+
+      if (moods.contains(mood) &&
+          date.day == now.day &&
+          date.month == now.month &&
+          date.year == now.year) {
+        dailyMoodCount[mood] = (dailyMoodCount[mood] ?? 0) + 1;
+      }
+    }
+
+    setState(() {});
+  }
+
+  Widget _buildChart(Map<String, int> moodData, String title) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(height: 250, child: BarChart(_generateBarData(moodData))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  BarChartData _generateBarData(Map<String, int> moodData) {
+    return BarChartData(
+      backgroundColor: Colors.transparent,
+      titlesData: FlTitlesData(
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return Text(value.toInt().toString(),
+                    style: TextStyle(fontSize: 12, color: Colors.black87));
+              }),
+        ),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              String mood = moods[value.toInt() % moods.length];
+              return Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  mood,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                ),
+              );
+            },
+            reservedSize: 30,
+          ),
+        ),
+      ),
+      borderData: FlBorderData(show: false),
+      gridData: FlGridData(show: true, drawVerticalLine: false),
+      barGroups: moodData.entries.map((entry) {
+        return BarChartGroupData(
+          x: moods.indexOf(entry.key),
+          barRods: [
+            BarChartRodData(
+              toY: entry.value.toDouble(),
+              color: Colors.blueAccent,
+              width: 20,
+              borderRadius: BorderRadius.circular(6),
+            )
+          ],
+        );
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mood Report'),
+        title: Text(
+          'Mood Reports',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        backgroundColor: Colors.blueAccent,
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Hourly Mood Report',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            _buildHourlyMoodChart(),
-            const SizedBox(height: 20),
-            const Text(
-              'Daily Mood Report',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            _buildDailyMoodChart(),
-            const SizedBox(height: 20),
-            const Text(
-              'Weekly Mood Report',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            _buildWeeklyMoodChart(),
-            const SizedBox(height: 20),
-            const Text(
-              'Monthly Mood Report',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            _buildMonthlyMoodChart(),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.lightBlueAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildChart(dailyMoodCount, 'Daily Mood Report'),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  // Dummy data for hourly mood report
-  LineChartData _getHourlyMoodData() {
-    return LineChartData(
-      gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(
-        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d), width: 1),
-      ),
-      minX: 0,
-      maxX: 23,
-      minY: 0,
-      maxY: 5,
-      lineBarsData: [
-        LineChartBarData(
-          spots: [
-            const FlSpot(0, 1), // Example data point
-            const FlSpot(1, 3),
-            const FlSpot(2, 2),
-            const FlSpot(3, 4),
-            // Add more data points as needed
-          ],
-          isCurved: true,
-          color: Colors.blue, // Updated to use 'color'
-          dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHourlyMoodChart() {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: LineChart(_getHourlyMoodData()),
-    );
-  }
-
-  // Dummy data for daily mood report
-  BarChartData _getDailyMoodData() {
-    return BarChartData(
-      barGroups: [
-        BarChartGroupData(
-            x: 0, barRods: [BarChartRodData(toY: 3, color: Colors.blue)]),
-        BarChartGroupData(
-            x: 1, barRods: [BarChartRodData(toY: 1, color: Colors.blue)]),
-        BarChartGroupData(
-            x: 2, barRods: [BarChartRodData(toY: 4, color: Colors.blue)]),
-        // Add more data points as needed
-      ],
-    );
-  }
-
-  Widget _buildDailyMoodChart() {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: BarChart(_getDailyMoodData()),
-    );
-  }
-
-  // Dummy data for weekly mood report
-  PieChartData _getWeeklyMoodData() {
-    return PieChartData(
-      sections: [
-        PieChartSectionData(value: 25, color: Colors.blue, title: 'Happy'),
-        PieChartSectionData(value: 35, color: Colors.red, title: 'Sad'),
-        PieChartSectionData(value: 20, color: Colors.green, title: 'Calm'),
-        PieChartSectionData(value: 20, color: Colors.yellow, title: 'Anger'),
-      ],
-    );
-  }
-
-  Widget _buildWeeklyMoodChart() {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: PieChart(_getWeeklyMoodData()),
-    );
-  }
-
-  // Dummy data for monthly mood report
-  LineChartData _getMonthlyMoodData() {
-    return LineChartData(
-      gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(
-        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d), width: 1),
-      ),
-      minX: 0,
-      maxX: 30, // Assuming a month with 30 days
-      minY: 0,
-      maxY: 5,
-      lineBarsData: [
-        LineChartBarData(
-          spots: [
-            const FlSpot(0, 1), // Example data point
-            const FlSpot(5, 3),
-            const FlSpot(10, 2),
-            const FlSpot(15, 4),
-            // Add more data points as needed
-          ],
-          isCurved: true,
-          color: Colors.blue, // Updated to use 'color'
-          dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMonthlyMoodChart() {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: LineChart(_getMonthlyMoodData()),
     );
   }
 }

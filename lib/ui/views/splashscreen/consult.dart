@@ -1,6 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -52,7 +55,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     onBoardingStyle(
                       'assets/img/onBoarding3.json',
                       'Track Your Mental Health Progress',
-                      'PayakApp empowers you to track your mental health Mood data securely and privately for informed self-improvement.',
+                      'PayakApp empowers you to track your mental health Mood.',
                     ),
                   ],
                 ),
@@ -104,36 +107,43 @@ class _OnBoardingState extends State<OnBoarding> {
     );
   }
 
-  Column onBoardingStyle(String animation, String title, String description) {
+  Widget onBoardingStyle(String animation, String title, String description) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Lottie.asset(
           animation,
-          height: screenHeight *
-              0.4, // Use screen height to adjust the size of the animation
+          height: screenHeight * 0.4, // Adjust animation size
         ),
         Padding(
           padding: EdgeInsets.symmetric(
-              vertical: screenHeight * 0.02, horizontal: screenWidth * 0.05),
-          child: Text(
+            vertical: screenHeight * 0.02,
+            horizontal: screenWidth * 0.05,
+          ),
+          child: AutoSizeText(
             title,
+            maxLines: 2,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: screenWidth * 0.07, // Responsive font size
+              fontSize: screenWidth * 0.07,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(
-              vertical: screenHeight * 0.02, horizontal: screenWidth * 0.05),
-          child: Text(
+            vertical: screenHeight * 0.02,
+            horizontal: screenWidth * 0.05,
+          ),
+          child: AutoSizeText(
             description,
+            maxLines: 4,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: screenWidth * 0.05, // Responsive font size
+              fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.w300,
             ),
           ),

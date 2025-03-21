@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../who/newspage.dart';
 
 class PeerGroupView extends StatelessWidget {
   const PeerGroupView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme color = Theme.of(context).colorScheme; // Get ColorScheme
+    final ColorScheme color = Theme.of(context).colorScheme; // Get theme colors
 
     return Scaffold(
       appBar: AppBar(
@@ -14,9 +15,7 @@ class PeerGroupView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: color.onPrimary,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Peer Group Events',
@@ -37,10 +36,8 @@ class PeerGroupView extends StatelessWidget {
               'Mental Health Workshop',
               'A workshop on mental health awareness and support.',
               Icons.event,
-              'assets/images/workshop.png', // Replace with appropriate image
-              () {
-                // Handle navigation or event action
-              },
+              'assets/images/workshop.png',
+              () {},
             ),
             const SizedBox(height: 16),
             _buildEventCard(
@@ -48,20 +45,31 @@ class PeerGroupView extends StatelessWidget {
               'Seminar on Coping Mechanisms',
               'Learn about effective coping strategies for stress.',
               Icons.school,
-              'assets/img/r1.png', // Replace with appropriate image
-              () {
-                // Handle navigation or event action
-              },
+              'assets/img/r1.png',
+              () {},
             ),
             const SizedBox(height: 16),
             _buildEventCard(
               context,
-              'Community Meetup',
+              'Support Group Meetup',
               'Join a supportive community discussion on mental health.',
               Icons.people,
-              'assets/img/r2.png', // Replace with appropriate image
+              'assets/img/r2.png',
+              () {},
+            ),
+            const SizedBox(height: 16),
+            _buildEventCard(
+              context,
+              'Latest Health News',
+              'Stay updated with the latest health news worldwide.',
+              Icons.article,
+              'assets/icons/news.png',
               () {
-                // Handle navigation or event action
+                // Navigate to NewsFeedPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsFeedPage()),
+                );
               },
             ),
           ],
@@ -82,19 +90,28 @@ class PeerGroupView extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
-      elevation: 8,
-      shadowColor: Colors.black45,
+      elevation: 6,
+      shadowColor: Colors.black38,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(16.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Image.asset(
-                assetName,
-                width: 70,
-                height: 70,
-                fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.asset(
+                  assetName,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.image_not_supported,
+                    size: 70,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(

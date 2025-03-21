@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:tangullo/ui/views/profile/update.dart';
-import 'package:tangullo/ui/views/profile/profile_menu.dart';
 
 class User {
   final String name;
@@ -159,40 +157,6 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// -- BUTTON
-              SizedBox(
-                width: 200,
-                child: ElevatedButton(
-                  onPressed: () => Get.to(() => const UpdateProfileScreen()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: tPrimaryColor,
-                    shape: const StadiumBorder(),
-                  ),
-                  child:
-                      Text("Edit Profile", style: TextStyle(color: tDarkColor)),
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Divider(),
-              const SizedBox(height: 10),
-
-              /// -- MENU
-              ProfileMenuWidget(
-                title: "Settings",
-                icon: LineAwesomeIcons.copy,
-                onPress: () {},
-              ),
-              ProfileMenuWidget(
-                title: "Account Details",
-                icon: LineAwesomeIcons.wallet_solid,
-                onPress: () {},
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              ProfileMenuWidget(
-                title: "Information",
-                icon: LineAwesomeIcons.info_solid,
-                onPress: () {},
-              ),
             ],
           ),
         ),

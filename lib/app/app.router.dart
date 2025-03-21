@@ -23,7 +23,6 @@ import 'package:tangullo/ui/views/settings/settings_view.dart' as _i15;
 import 'package:tangullo/ui/views/signup/signup_view.dart' as _i9;
 import 'package:tangullo/ui/views/splashscreen/splashscreen_view.dart' as _i10;
 import 'package:tangullo/ui/views/startup/startup_view.dart' as _i2;
-import 'package:tangullo/ui/views/therapist/therapist_view.dart' as _i11;
 
 class Routes {
   static const startupView = '/startup-view';
@@ -114,10 +113,6 @@ class StackedRouter extends _i1.RouterBase {
       page: _i10.SplashscreenView,
     ),
     _i1.RouteDef(
-      Routes.therapistView,
-      page: _i11.TherapistView,
-    ),
-    _i1.RouteDef(
       Routes.chatscreenView,
       page: _i12.ChatscreenView,
     ),
@@ -194,12 +189,6 @@ class StackedRouter extends _i1.RouterBase {
     _i10.SplashscreenView: (data) {
       return _i17.MaterialPageRoute<dynamic>(
         builder: (context) => const _i10.SplashscreenView(),
-        settings: data,
-      );
-    },
-    _i11.TherapistView: (data) {
-      return _i17.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i11.TherapistView(),
         settings: data,
       );
     },

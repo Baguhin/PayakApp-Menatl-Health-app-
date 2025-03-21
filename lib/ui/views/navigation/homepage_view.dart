@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stacked/stacked.dart';
-import 'package:tangullo/ui/views/chatbot/metal.dart';
 import 'package:tangullo/ui/views/home/home.dart';
 import 'package:tangullo/ui/views/messages/messages_view.dart';
 import 'package:tangullo/ui/views/settings/settings_view.dart';
-import 'package:tangullo/ui/views/therapist/doctor_page.dart';
+import '../admin/doctorslist.dart';
+import '../chatbot/g.dart';
 import 'homepage_viewmodel.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:shimmer/shimmer.dart'; // Import shimmer package
@@ -44,7 +44,7 @@ class HomepageView extends StackedView<HomepageViewModel> {
           children: <Widget>[
             _buildPageWithShimmer(
                 viewModel.isLoading, const Home(userName: '')),
-            _buildPageWithShimmer(viewModel.isLoading, const DoctorPage()),
+            _buildPageWithShimmer(viewModel.isLoading, const DoctorsListPage()),
             _buildPageWithShimmer(viewModel.isLoading, const MessagesView()),
             _buildPageWithShimmer(viewModel.isLoading, const SettingsView()),
           ],
@@ -55,11 +55,7 @@ class HomepageView extends StackedView<HomepageViewModel> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  _createPageRoute(FlutterGeminiChat(
-                    chatContext: '',
-                    chatList: const [],
-                    apiKey: '',
-                  )),
+                  _createPageRoute(const AdminChatbot()),
                 );
               },
               backgroundColor: Colors.transparent,
