@@ -59,7 +59,7 @@ class LoginView extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             blurRadius: 10,

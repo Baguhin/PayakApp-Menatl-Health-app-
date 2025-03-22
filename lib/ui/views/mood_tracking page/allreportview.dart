@@ -76,13 +76,13 @@ class _MoodReportViewState extends State<MoodReportView> {
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             SizedBox(height: 250, child: BarChart(_generateBarData(moodData))),
           ],
         ),
@@ -100,7 +100,8 @@ class _MoodReportViewState extends State<MoodReportView> {
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
                 return Text(value.toInt().toString(),
-                    style: TextStyle(fontSize: 12, color: Colors.black87));
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black87));
               }),
         ),
         bottomTitles: AxisTitles(
@@ -109,11 +110,11 @@ class _MoodReportViewState extends State<MoodReportView> {
             getTitlesWidget: (value, meta) {
               String mood = moods[value.toInt() % moods.length];
               return Padding(
-                padding: EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   mood,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87),
@@ -125,7 +126,7 @@ class _MoodReportViewState extends State<MoodReportView> {
         ),
       ),
       borderData: FlBorderData(show: false),
-      gridData: FlGridData(show: true, drawVerticalLine: false),
+      gridData: const FlGridData(show: true, drawVerticalLine: false),
       barGroups: moodData.entries.map((entry) {
         return BarChartGroupData(
           x: moods.indexOf(entry.key),
@@ -146,7 +147,7 @@ class _MoodReportViewState extends State<MoodReportView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Mood Reports',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
@@ -154,7 +155,7 @@ class _MoodReportViewState extends State<MoodReportView> {
         centerTitle: true,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blueAccent, Colors.lightBlueAccent],
             begin: Alignment.topCenter,

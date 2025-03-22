@@ -99,6 +99,7 @@ class SplashscreenView extends StackedView<SplashscreenViewModel> {
         DataSnapshot snapshot = await userRef.get();
 
         if (snapshot.exists) {
+          // ignore: unused_local_variable
           final userData = snapshot.value as Map;
           return user.email;
         }

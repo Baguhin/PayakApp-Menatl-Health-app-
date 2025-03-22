@@ -20,7 +20,7 @@ class ADHDResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ADHD Assessment Result'),
+        title: const Text(' Assessment Test Result'),
         backgroundColor: Colors.deepPurple,
         elevation: 0,
       ),
@@ -54,22 +54,22 @@ class ADHDResultScreen extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Your ADHD Assessment Results",
+        Text(
+          "Your Assessment Analyzing Results",
           style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.deepPurple),
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: 8),
+        Text(
           "Below is a detailed breakdown of your assessment:",
           style: TextStyle(fontSize: 16, color: Colors.black54),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
       ],
     );
   }

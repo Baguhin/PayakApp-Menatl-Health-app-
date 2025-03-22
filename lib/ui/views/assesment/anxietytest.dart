@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tangullo/ui/views/assesment/profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import '../survey_results/adhd_result_screen.dart';
 
 class AnxietyTestScreen extends StatefulWidget {
   const AnxietyTestScreen({super.key});
@@ -14,133 +15,105 @@ class _AnxietyTestScreenState extends State<AnxietyTestScreen> {
   final List<Map<String, dynamic>> questions = [
     {
       'question':
-          'Over the last 2 weeks, how often have you felt nervous, anxious, or on edge?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you often feel excessively worried or anxious about multiple aspects of your life (e.g., work, school, relationships)?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, how often have you been unable to stop or control worrying?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you frequently experience physical symptoms such as sweating, trembling, or a racing heart without an obvious cause?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you felt restless or on edge, unable to relax?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'A little', 'points': 1},
-        {'option': 'Quite a bit', 'points': 2},
-        {'option': 'Very much', 'points': 3},
-      ],
+          "Do you find it difficult to relax, even when you have free time?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you been easily tired or fatigued?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'Occasionally', 'points': 1},
-        {'option': 'Frequently', 'points': 2},
-        {'option': 'Very much', 'points': 3},
-      ],
+          "Do you often have trouble falling asleep or staying asleep due to anxious thoughts?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you been having difficulty concentrating on things, such as reading the newspaper or watching television?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'Occasionally', 'points': 1},
-        {'option': 'Frequently', 'points': 2},
-        {'option': 'Very much', 'points': 3},
-      ],
+          "Do you feel a sense of impending danger, panic, or doom without any apparent reason?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you been so worried that you have trouble falling or staying asleep?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you frequently avoid social situations or interactions due to feelings of anxiety or nervousness?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you been irritable or on edge with people?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'Occasionally', 'points': 1},
-        {'option': 'Frequently', 'points': 2},
-        {'option': 'Very much', 'points': 3},
-      ],
+          "Do you find yourself overthinking and analyzing situations excessively, even small decisions?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you been afraid that something awful is going to happen?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Occasionally', 'points': 1},
-        {'option': 'Frequently', 'points': 2},
-        {'option': 'All the time', 'points': 3},
-      ],
+          "Do you experience sudden episodes of intense fear or panic (panic attacks), sometimes without a clear trigger?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you avoided places or situations that might cause you to worry?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'Occasionally', 'points': 1},
-        {'option': 'Frequently', 'points': 2},
-        {'option': 'All the time', 'points': 3},
-      ],
+          "Do you frequently experience muscle tension, headaches, or stomach discomfort due to stress or anxiety?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, have you had difficulty controlling your worries that have made it hard to get things done at work, school or home?',
-      'options': [
-        {'option': 'Not at all', 'points': 0},
-        {'option': 'To some degree', 'points': 1},
-        {'option': 'To a considerable degree', 'points': 2},
-        {'option': 'Very much', 'points': 3},
-      ],
+          "Do you struggle to concentrate or feel like your mind goes blank when you're feeling anxious?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
   ];
 
   Map<int, int> selectedOptions = {};
-  bool testTaken = false; // Flag to track if the test has been taken
+  bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    checkIfTestTaken(); // Check if the test has been taken before
-  }
+  Future<void> analyzeADHDTest() async {
+    setState(() => isLoading = true);
 
-  // Method to check if the user has already taken the test
-  void checkIfTestTaken() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final docSnapshot = await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user.uid)
-            .get();
-        if (docSnapshot.exists &&
-            docSnapshot.data()!['AnxietyTestScore'] != null) {
-          setState(() {
-            testTaken = true;
-          });
-        }
-      } catch (e) {
-        print('Error checking test status: $e');
+    try {
+      List<String> userResponses = selectedOptions.entries.map((entry) {
+        int questionIndex = entry.key;
+        int optionIndex = entry.value;
+        return "Q${questionIndex + 1}: ${questions[questionIndex]['question']} - ${questions[questionIndex]['options'][optionIndex]}";
+      }).toList();
+
+      final response = await http.post(
+        Uri.parse('http://192.168.212.120:5000/api/anxiety/analyze-anxiety'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({'responses': userResponses}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() => isLoading = false);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ADHDResultScreen(
+              conclusion:
+                  data['conclusion']?.toString() ?? "No conclusion available",
+              explanation:
+                  data['explanation']?.toString() ?? "No explanation available",
+              suggestions:
+                  data['suggestions']?.toString() ?? "No suggestions available",
+              important: data['important']?.toString() ??
+                  "No important considerations available",
+              disclaimer:
+                  data['disclaimer']?.toString() ?? "No disclaimer available",
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to analyze Anxiety responses.');
       }
+    } catch (error) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Error analyzing test. Please try again.')),
+      );
     }
   }
 
@@ -148,181 +121,75 @@ class _AnxietyTestScreenState extends State<AnxietyTestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Anxiety Test',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xFF5C6BC0), // Adjusted color
+        title: const Text('Anxiety Self-Assessment'),
+        backgroundColor: Colors.deepPurple,
       ),
-      backgroundColor: const Color(0xFFFAFAFA), // Lighter background
-      body: testTaken
-          ? const Center(
-              child: Text(
-                'You have already taken the anxiety test.',
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                textAlign: TextAlign.center,
-              ),
-            )
-          : ListView.builder(
-              itemCount: questions.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 6,
-                  margin: const EdgeInsets.all(10),
-                  color: Colors.white, // Lighter card color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Question ${index + 1}: ${questions[index]['question']}',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(height: 15),
-                        Column(
-                          children: List.generate(
-                            questions[index]['options'].length,
-                            (optionIndex) {
-                              return RadioListTile<int>(
-                                title: Text(
-                                  questions[index]['options'][optionIndex]
-                                      ['option'],
-                                  style: const TextStyle(color: Colors.black),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: questions.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.all(10),
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                questions[index]['question'],
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              Column(
+                                children: List.generate(
+                                  questions[index]['options'].length,
+                                  (optionIndex) {
+                                    return RadioListTile<int>(
+                                      title: Text(questions[index]['options']
+                                          [optionIndex]),
+                                      value: optionIndex,
+                                      groupValue: selectedOptions[index],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedOptions[index] = value!;
+                                        });
+                                      },
+                                    );
+                                  },
                                 ),
-                                value: questions[index]['options'][optionIndex]
-                                    ['points'],
-                                groupValue: selectedOptions[index],
-                                activeColor:
-                                    Colors.blueAccent, // Highlighted color
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedOptions[index] = value!;
-                                  });
-                                },
-                              );
-                            },
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: testTaken
-            ? null // Disable FAB if the test has been taken
-            : () async {
-                int totalScore = 0;
-                selectedOptions.forEach((key, value) {
-                  totalScore += value;
-                });
-
-                String diagnosis;
-                if (totalScore == 0) {
-                  diagnosis = 'No anxiety';
-                } else if (totalScore <= 4) {
-                  diagnosis = 'Minimal anxiety';
-                } else if (totalScore <= 8) {
-                  diagnosis = 'Mild anxiety';
-                } else if (totalScore <= 14) {
-                  diagnosis = 'Moderate anxiety';
-                } else if (totalScore <= 20) {
-                  diagnosis = 'Moderately severe anxiety';
-                } else {
-                  diagnosis = 'Severe anxiety';
-                }
-
-                try {
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user != null) {
-                    await FirebaseFirestore.instance
-                        .collection('Users')
-                        .doc(user.uid)
-                        .update({
-                      'AnxietyTestScore': totalScore,
-                      'AnxietyDiagnosis': diagnosis,
-                      'Timestamp': Timestamp.now(),
-                    });
-
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Test Result'),
-                          content: Text(
-                              'Total Score: $totalScore\nDiagnosis: $diagnosis'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ProfilePage(
-                                        testName: 'Anxiety Test'),
-                                  ),
-                                );
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Error'),
-                          content: const Text('User not logged in.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Close'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                } catch (e) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Error'),
-                        content: Text('Failed to save the result: $e'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Close'),
-                          ),
-                        ],
                       );
                     },
-                  );
-                }
-              },
-        backgroundColor: const Color(0xFF5C6BC0), // Adjusted color for FAB
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.done),
-      ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: selectedOptions.length < questions.length
+                        ? null
+                        : analyzeADHDTest,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 32),
+                      backgroundColor: Colors.deepPurple,
+                    ),
+                    child: const Text('Submit',
+                        style: TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

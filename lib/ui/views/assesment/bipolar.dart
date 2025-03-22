@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import '../survey_results/assestment.dart';
 
 class BipolarTestScreen extends StatefulWidget {
   const BipolarTestScreen({super.key});
@@ -14,133 +15,105 @@ class _BipolarTestScreenState extends State<BipolarTestScreen> {
   final List<Map<String, dynamic>> questions = [
     {
       'question':
-          'Over the past 2 weeks, have you experienced a period where you felt unusually energetic or excited, with increased talkativeness or racing thoughts?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Have you ever had periods where you felt so full of energy that you needed less sleep than usual?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'During this period, did you need significantly less sleep than usual and feel like you didn\'t need any rest?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you have episodes of extreme mood swings, ranging from very high (mania) to very low (depression)?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Did you feel overly confident or have inflated self-esteem during this time?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Have you ever felt so unusually irritable that it led to arguments or conflicts with others?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Did you become easily distracted or find it hard to focus on tasks because of your racing thoughts?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you sometimes feel like your thoughts are racing, making it hard to focus on one thing?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the past 2 weeks, have you felt persistently sad, hopeless, or irritable for most of the day?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Have you experienced times when you engaged in risky or impulsive behaviors (e.g., spending too much money, reckless driving, or risky sexual behavior)?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Did you experience a significant loss of interest or pleasure in most activities you used to enjoy?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you have periods where you feel excessively self-confident or believe you have special abilities or powers?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Have you had significant changes in appetite or weight (either weight loss or gain) without trying?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Have you experienced episodes of deep sadness or hopelessness that last for days or weeks?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'During this period, have you experienced feelings of worthlessness or excessive guilt, even over trivial matters?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do you find yourself talking more than usual or feeling like you can't stop talking during certain periods?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, how often have you experienced extreme mood swings?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Have you had times when you feel extremely restless or like you can't sit still?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
     {
       'question':
-          'Over the last 2 weeks, how often have you felt overly energetic or unusually irritable?',
-      'options': [
-        {'option': 'Never', 'points': 0},
-        {'option': 'Sometimes', 'points': 1},
-        {'option': 'Often', 'points': 2},
-        {'option': 'Everyday', 'points': 3},
-      ],
+          "Do your mood swings interfere with your ability to work, maintain relationships, or function in daily life?",
+      'options': ['Never', 'Rarely', 'Sometimes', 'Often', 'Very Often'],
     },
-    // Add more questions here...
   ];
 
   Map<int, int> selectedOptions = {};
-  bool testTaken = false; // Flag to track if the test has been taken
+  bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    checkIfTestTaken(); // Check if the test has been taken before
-  }
+  Future<void> analyzeADHDTest() async {
+    setState(() => isLoading = true);
 
-  void checkIfTestTaken() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        final docSnapshot = await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user.uid)
-            .get();
-        if (docSnapshot.exists &&
-            docSnapshot.data()!['bipolarTestScore'] != null) {
-          setState(() {
-            testTaken = true;
-          });
-        }
-      } catch (e) {
-        print('Error checking test status: $e');
+    try {
+      List<String> userResponses = selectedOptions.entries.map((entry) {
+        int questionIndex = entry.key;
+        int optionIndex = entry.value;
+        return "Q${questionIndex + 1}: ${questions[questionIndex]['question']} - ${questions[questionIndex]['options'][optionIndex]}";
+      }).toList();
+
+      final response = await http.post(
+        Uri.parse('http://192.168.212.120:5000/api/bipolar/analyze-bipolar'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({'responses': userResponses}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() => isLoading = false);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ADHDResultScreen(
+              conclusion:
+                  data['conclusion']?.toString() ?? "No conclusion available",
+              explanation:
+                  data['explanation']?.toString() ?? "No explanation available",
+              suggestions:
+                  data['suggestions']?.toString() ?? "No suggestions available",
+              important: data['important']?.toString() ??
+                  "No important considerations available",
+              disclaimer:
+                  data['disclaimer']?.toString() ?? "No disclaimer available",
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to analyze Bipolar responses.');
       }
+    } catch (error) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Error analyzing test. Please try again.')),
+      );
     }
   }
 
@@ -148,160 +121,75 @@ class _BipolarTestScreenState extends State<BipolarTestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bipolar Test'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
+        title: const Text('Bipolar Self-Assessment'),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: testTaken
-          ? const Center(
-              child: Text(
-                'You have already taken the Bipolar test.',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-            )
-          : ListView.builder(
-              itemCount: questions.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.all(8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Question ${index + 1}: ${questions[index]['question']}',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue),
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          children: List.generate(
-                            questions[index]['options'].length,
-                            (optionIndex) {
-                              return RadioListTile<int>(
-                                title: Text(questions[index]['options']
-                                    [optionIndex]['option']),
-                                value: questions[index]['options'][optionIndex]
-                                    ['points'],
-                                groupValue: selectedOptions[index],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedOptions[index] = value!;
-                                  });
-                                },
-                              );
-                            },
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: questions.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.all(10),
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                questions[index]['question'],
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              Column(
+                                children: List.generate(
+                                  questions[index]['options'].length,
+                                  (optionIndex) {
+                                    return RadioListTile<int>(
+                                      title: Text(questions[index]['options']
+                                          [optionIndex]),
+                                      value: optionIndex,
+                                      groupValue: selectedOptions[index],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedOptions[index] = value!;
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          int totalScore = 0;
-          selectedOptions.forEach((key, value) {
-            totalScore += value;
-          });
-          String diagnosis;
-          if (totalScore == 0) {
-            diagnosis = 'No Bipolar';
-          } else if (totalScore <= 4) {
-            diagnosis = 'Minimal Bipolar';
-          } else if (totalScore <= 8) {
-            diagnosis = 'Mild Bipolar';
-          } else if (totalScore <= 14) {
-            diagnosis = 'Moderate Bipolar';
-          } else if (totalScore <= 20) {
-            diagnosis = 'Moderately severe Bipolar';
-          } else {
-            diagnosis = 'Severe Bipolar';
-          }
-
-          try {
-            final user = FirebaseAuth.instance.currentUser;
-            if (user != null) {
-              await FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(user.uid)
-                  .update({
-                'bipolarTestScore': totalScore,
-                'bipolarDiagnosis': diagnosis,
-                'timestamp': Timestamp.now(),
-              });
-
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Test Result'),
-                    content: Text('Total Score: $totalScore'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const ProfilePage(testName: 'Bipolar Test'),
-                            ),
-                          );
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Error'),
-                    content: const Text('User not logged in.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-          } catch (e) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Error'),
-                  content: Text('Failed to save the result: $e'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Close'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: selectedOptions.length < questions.length
+                        ? null
+                        : analyzeADHDTest,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 32),
+                      backgroundColor: Colors.deepPurple,
                     ),
-                  ],
-                );
-              },
-            );
-          }
-        },
-        child: const Icon(Icons.done),
-      ),
+                    child: const Text('Submit',
+                        style: TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
