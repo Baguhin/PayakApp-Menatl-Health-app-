@@ -79,7 +79,8 @@ class _OCDTestScreenState extends State<OCDTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/ocd/analyze-ocd'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/ocd/analyze-ocd'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

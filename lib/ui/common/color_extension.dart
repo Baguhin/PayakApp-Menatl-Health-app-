@@ -19,7 +19,21 @@ class TColor {
 
   static const Color buttoncolor = Color.fromARGB(255, 66, 223, 4);
 
-  static var green; // Black for text on light backgrounds
+  static var green;
+
+  static var gray;
+
+  static var primaryColor2;
+
+  static var white;
+
+  static var black;
+
+  static var primaryG;
+
+  static var secondaryColor1;
+
+  static var lightGray; // Black for text on light backgrounds
 
   static Color get primaryTextW => const Color(0xffF6F1FB);
   static Color get secondaryText => const Color(0xffA1A4B2);

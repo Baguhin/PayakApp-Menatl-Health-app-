@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'news_service.dart';
 import 'news_model.dart';
+import 'web_view.dart';
 
 class NewsFeedPage extends StatefulWidget {
   const NewsFeedPage({super.key});
@@ -26,7 +26,7 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text(
-          "International Health News",
+          "International Mental Health News",
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.teal[400],
@@ -65,7 +65,7 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
-        onTap: () => _openNewsLink(article.link),
+        onTap: () => _openNewsLink(article.link, article.title),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -102,7 +102,8 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
                           fontWeight: FontWeight.w600,
                         ),
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => _openNewsLink(article.link),
+                          ..onTap =
+                              () => _openNewsLink(article.link, article.title),
                       ),
                   ],
                 ),
@@ -142,10 +143,7 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
             Text(
               "Failed to load news. Please check your internet connection and try again.",
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.red,
-                fontWeight: FontWeight.w500,
-              ),
+                  fontSize: 16, color: Colors.red, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
           ],
@@ -167,13 +165,12 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
     );
   }
 
-  void _openNewsLink(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Could not open the article.")),
-      );
-    }
+  void _openNewsLink(String url, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WebViewPage(url: url, title: title),
+      ),
+    );
   }
 }

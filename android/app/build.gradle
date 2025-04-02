@@ -20,6 +20,7 @@ android {
     }
 
     defaultConfig {
+       manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
         applicationId = "com.example.tangullo"
         minSdkVersion 23
         targetSdk = flutter.targetSdkVersion
@@ -41,4 +42,8 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.2.0')
     implementation 'com.google.firebase:firebase-analytics'
+  
+
 }
+
+

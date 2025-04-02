@@ -1,22 +1,24 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:xml/xml.dart' as xml;
 import 'news_model.dart';
 
 class NewsService {
-  final String whoNewsUrl = "https://www.who.int/rss-feeds/news-english.xml";
+  final String apiUrl = "https://legit-backend-iqvk.onrender.com/api/news";
 
   Future<List<NewsArticle>> fetchNews() async {
-    final response = await http.get(Uri.parse(whoNewsUrl));
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-    if (response.statusCode == 200) {
-      print("WHO RSS Feed Response:\n${response.body}"); // Debugging raw XML
-
-      final document = xml.XmlDocument.parse(response.body);
-      final items = document.findAllElements("item");
-
-      return items.map((element) => NewsArticle.fromXml(element)).toList();
-    } else {
-      throw Exception("Failed to load news");
+      if (response.statusCode == 200) {
+        print("News API Response: ${response.body}"); // Debug print
+        final List<dynamic> jsonData = json.decode(response.body);
+        return jsonData.map((item) => NewsArticle.fromJson(item)).toList();
+      } else {
+        throw Exception("Failed to load news: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching news: $e"); // Debug print
+      throw Exception("Failed to load news: $e");
     }
   }
 }

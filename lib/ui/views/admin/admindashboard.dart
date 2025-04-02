@@ -71,7 +71,7 @@ class AdminDashboardView extends StatelessWidget {
               icon: Icons.bar_chart,
               color: Colors.orange,
               backgroundColor: Colors.orange.shade100,
-              imagePath: 'assets/images/reports.png',
+              imagePath: 'assets/images21/reports.png',
               onTap: () {
                 Navigator.pushNamed(context, '/viewReports');
               },
@@ -82,7 +82,7 @@ class AdminDashboardView extends StatelessWidget {
               icon: Icons.event,
               color: Colors.green,
               backgroundColor: Colors.green.shade100,
-              imagePath: 'assets/images/seminars.png',
+              imagePath: 'assets/images21/seminars.png',
               onTap: () {
                 // Navigate to the ViewServiceFeedbackPage
                 Navigator.pushNamed(context, '/view_service_feedback');
@@ -94,7 +94,7 @@ class AdminDashboardView extends StatelessWidget {
               icon: Icons.volunteer_activism,
               color: Colors.purple,
               backgroundColor: Colors.purple.shade100,
-              imagePath: 'assets/images/therapsit.png',
+              imagePath: 'assets/images21/therapsit.png',
               onTap: () {
                 Navigator.pushNamed(context, '/manageVolunteers');
               },
@@ -105,7 +105,7 @@ class AdminDashboardView extends StatelessWidget {
               icon: Icons.report,
               color: Colors.red,
               backgroundColor: Colors.red.shade100,
-              imagePath: 'assets/images/manage.png',
+              imagePath: 'assets/images21/manage.png',
               onTap: () {
                 Navigator.pushNamed(context, '/manageReports');
               },
@@ -118,7 +118,7 @@ class AdminDashboardView extends StatelessWidget {
               color: Colors.blue,
               backgroundColor: Colors.blue.shade100,
               imagePath:
-                  'assets/images/mental_health_announcement.png', // Add your image path here
+                  'assets/images21/mental_health_announcement.png', // Add your image path here
               onTap: () {
                 Navigator.pushNamed(
                     context, '/manageMentalHealthAnnouncements');
@@ -132,7 +132,7 @@ class AdminDashboardView extends StatelessWidget {
               color: Colors.teal,
               backgroundColor: Colors.teal.shade100,
               imagePath:
-                  'assets/images/seminar_announcement.png', // Add your image path here
+                  'assets/images21/seminar_announcement.png', // Add your image path here
               onTap: () {
                 Navigator.pushNamed(
                     context, '/mentalHealthSeminarAnnouncements');

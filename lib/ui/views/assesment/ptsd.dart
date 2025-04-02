@@ -79,7 +79,8 @@ class _PTSDTestScreenState extends State<PTSDTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/ptsd/analyze-ptsd'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/ptsd/analyze-ptsd'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

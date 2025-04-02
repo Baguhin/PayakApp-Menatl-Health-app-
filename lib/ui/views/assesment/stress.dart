@@ -79,7 +79,8 @@ class _StressTestScreenState extends State<StressTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/stress/analyze-stress'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/stress/analyze-stress'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

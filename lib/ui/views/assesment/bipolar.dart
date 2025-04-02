@@ -79,7 +79,8 @@ class _BipolarTestScreenState extends State<BipolarTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/bipolar/analyze-bipolar'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/bipolar/analyze-bipolar'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

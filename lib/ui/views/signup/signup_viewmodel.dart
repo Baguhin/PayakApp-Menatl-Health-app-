@@ -43,36 +43,56 @@ class SignupViewModel extends BaseViewModel {
   }
 
   Future<void> createUser(String uid) async {
-    await _database.child('users').child(uid).set({
-      'displayName': _username,
-      'email': _email,
-      'role': _role,
-      'isVerified': _isVerified,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    final stopwatch = Stopwatch()..start();
+    try {
+      await _database.child('users').child(uid).set({
+        'displayName': _username,
+        'email': _email,
+        'role': _role,
+        'isVerified': _isVerified,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      if (kDebugMode) print("Error saving user data: $e");
+    } finally {
+      stopwatch.stop();
+      if (kDebugMode) {
+        print("User data write time: ${stopwatch.elapsedMilliseconds} ms");
+      }
+    }
   }
 
   Future<void> createAdminUser(String uid) async {
-    await _database.child('users').child(uid).set({
-      'displayName': _username,
-      'email': _email,
-      'role': 'admin',
-      'isVerified': false, // Initially false
-      'isEnabled': false, // Disable the account initially
-      'timestamp': DateTime.now().toIso8601String(),
-      'isAdmin': true,
-    });
+    final stopwatch = Stopwatch()..start();
+    try {
+      await _database.child('users').child(uid).set({
+        'displayName': _username,
+        'email': _email,
+        'role': 'admin',
+        'isVerified': false,
+        'isEnabled': false,
+        'timestamp': DateTime.now().toIso8601String(),
+        'isAdmin': true,
+      });
 
-    // Add the admin request to the pending requests
-    await _database.child('pending_admin_requests').child(uid).set({
-      'displayName': _username,
-      'email': _email,
-      'uid': uid, // Store the uid for later approval
-    });
+      await _database.child('pending_admin_requests').child(uid).set({
+        'displayName': _username,
+        'email': _email,
+        'uid': uid,
+      });
+    } catch (e) {
+      if (kDebugMode) print("Error saving admin data: $e");
+    } finally {
+      stopwatch.stop();
+      if (kDebugMode) {
+        print("Admin data write time: ${stopwatch.elapsedMilliseconds} ms");
+      }
+    }
   }
 
   Future<void> signup(BuildContext context) async {
     setBusy(true);
+    final stopwatch = Stopwatch()..start();
 
     try {
       if (_email.isEmpty || _password.isEmpty || _username.isEmpty) {
@@ -87,44 +107,47 @@ class SignupViewModel extends BaseViewModel {
         throw 'Cannot create an account with this email. Reserved for Super Admin.';
       }
 
+      print("Creating Firebase user...");
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: _email,
         password: _password,
       );
+      stopwatch.stop();
+      print(
+          "Firebase Authentication time: ${stopwatch.elapsedMilliseconds} ms");
 
       User? user = userCredential.user;
       if (user != null) {
         await user.updateProfile(displayName: _username);
         await user.reload();
 
-        // Check if the email contains 'admin' and create an admin user
-        if (_email.contains('admin')) {
+        if (_email.contains('Bisu')) {
+          print("Admin account detected. Writing admin data...");
           await createAdminUser(user.uid);
-          _showSuccessDialog(context,
+          await _showSuccessDialog(context,
               'Your account has been created as an admin. Please wait for approval.');
+          await Future.delayed(const Duration(milliseconds: 500));
           Navigator.of(context).pushReplacementNamed('/login');
-          return;
         } else {
+          print("User account detected. Writing user data...");
           await createUser(user.uid);
-          _showSuccessDialog(
+          await _showSuccessDialog(
               context, 'Your account has been created successfully.');
+          await Future.delayed(const Duration(milliseconds: 500));
           Navigator.of(context).pushReplacementNamed('/login');
-          return;
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error during signup: $e');
-      } // Log the error
+      if (kDebugMode) print('Error during signup: $e');
       _showErrorDialog(context, e.toString());
     } finally {
       setBusy(false);
     }
   }
 
-  void _showSuccessDialog(BuildContext context, String message) {
-    showDialog(
+  Future<void> _showSuccessDialog(BuildContext context, String message) async {
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -143,8 +166,8 @@ class SignupViewModel extends BaseViewModel {
     );
   }
 
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
+  Future<void> _showErrorDialog(BuildContext context, String message) async {
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

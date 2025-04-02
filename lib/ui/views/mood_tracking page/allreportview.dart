@@ -6,9 +6,9 @@ import 'package:fl_chart/fl_chart.dart';
 class MoodReportView extends StatefulWidget {
   const MoodReportView(
       {super.key,
-      required String selectedMood,
       required String mood,
-      required String userId});
+      required String userId,
+      required String selectedMood});
 
   @override
   _MoodReportViewState createState() => _MoodReportViewState();
@@ -83,7 +83,16 @@ class _MoodReportViewState extends State<MoodReportView> {
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(height: 250, child: BarChart(_generateBarData(moodData))),
+            SizedBox(
+              height: 300,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: moodData.length * 50.0,
+                  child: BarChart(_generateBarData(moodData)),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -96,32 +105,38 @@ class _MoodReportViewState extends State<MoodReportView> {
       titlesData: FlTitlesData(
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 40,
-              getTitlesWidget: (value, meta) {
-                return Text(value.toInt().toString(),
-                    style:
-                        const TextStyle(fontSize: 12, color: Colors.black87));
-              }),
+            showTitles: true,
+            reservedSize: 40,
+            getTitlesWidget: (value, meta) {
+              return Text(value.toInt().toString(),
+                  style: const TextStyle(fontSize: 12, color: Colors.black87));
+            },
+          ),
         ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: (value, meta) {
-              String mood = moods[value.toInt() % moods.length];
-              return Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  mood,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87),
-                ),
-              );
+              int index = value.toInt();
+              if (index >= 0 && index < moods.length) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Transform.rotate(
+                    angle: -0.5,
+                    child: Text(
+                      moods[index],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87),
+                    ),
+                  ),
+                );
+              }
+              return Container();
             },
-            reservedSize: 30,
+            reservedSize: 60,
           ),
         ),
       ),
@@ -134,7 +149,7 @@ class _MoodReportViewState extends State<MoodReportView> {
             BarChartRodData(
               toY: entry.value.toDouble(),
               color: Colors.blueAccent,
-              width: 20,
+              width: 30,
               borderRadius: BorderRadius.circular(6),
             )
           ],

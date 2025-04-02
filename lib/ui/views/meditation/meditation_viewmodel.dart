@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tangullo/ui/views/categories/index.dart';
 import 'package:tangullo/ui/views/journalizing/journalizing_view.dart';
-import 'package:tangullo/ui/views/meditation/MeditationPage.dart';
 import 'package:tangullo/ui/views/meditation/breath/BreathExercisePage.dart';
 import 'package:tangullo/ui/views/meditation/calm/calm.dart';
 import 'package:tangullo/ui/views/meditation/goodnightstories/sleepstories.dart';
+import 'package:tangullo/ui/views/new_homepage/screens/patient_dashboard/training/training_home_screen.dart';
 
 class MeditationViewModel extends BaseViewModel {
   // Update these navigation methods to use custom transition
@@ -13,14 +13,14 @@ class MeditationViewModel extends BaseViewModel {
   void navigateToMeditationPage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(const MeditationPage()),
+      _createPageRoute(const TrainingScreen()),
     );
   }
 
   void navigateToRelaxPage(BuildContext context) {
     Navigator.push(
       context,
-      _createPageRoute(const RelaxPage()),
+      _createPageRoute(const MusicScreen()),
     );
   }
 

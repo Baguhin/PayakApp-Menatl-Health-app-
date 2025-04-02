@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart' as dio;
 import 'dart:io';
+// ignore: depend_on_referenced_packages
 import 'package:get/get.dart';
+// ignore: depend_on_referenced_packages
 import 'package:mime/mime.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http_parser/http_parser.dart';
+
+import 'admin_doctor.dart';
 
 class CreateDoctorPage extends StatefulWidget {
   const CreateDoctorPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CreateDoctorPageState createState() => _CreateDoctorPageState();
 }
 
@@ -27,7 +33,7 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
   final dio.Dio _dio = dio.Dio();
 
   final String apiUrl =
-      'http://192.168.43.161:5000/doctors'; // Change IP if needed
+      'https://legit-backend-iqvk.onrender.com/doctors'; // Change if needed
   bool isFormValid = false;
 
   @override
@@ -80,8 +86,9 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
 
       if (_image != null) {
         String fileName = _image!.path.split('/').last;
-        String? mimeType = lookupMimeType(_image!.path);
-        final mimeTypeData = mimeType?.split('/') ?? ['image', 'jpeg'];
+        String mimeType =
+            lookupMimeType(_image!.path) ?? 'image/jpeg'; // ✅ Default fallback
+        final mimeTypeData = mimeType.split('/');
 
         formData.files.add(MapEntry(
           "image",
@@ -100,8 +107,11 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
       );
 
       if (response.statusCode == 201) {
-        Get.snackbar("Success", "Doctor added successfully",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar("Success", "Doctor added successfully",
+              backgroundColor: Colors.green, colorText: Colors.white);
+        });
+
         nameController.clear();
         phoneController.clear();
         specializationController.clear();
@@ -113,12 +123,16 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
           isFormValid = false;
         });
       } else {
-        Get.snackbar("Error", "Failed: ${response.statusCode}",
-            backgroundColor: Colors.red, colorText: Colors.white);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar("Error", "Failed: ${response.statusCode}",
+              backgroundColor: Colors.red, colorText: Colors.white);
+        });
       }
     } catch (e) {
-      Get.snackbar("Error", "Failed to create doctor: $e",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.snackbar("Error", "Failed to create doctor: $e",
+            backgroundColor: Colors.red, colorText: Colors.white);
+      });
     }
   }
 
@@ -134,6 +148,19 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
         backgroundColor: Colors.teal[400],
         centerTitle: true,
         elevation: 3,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list, color: Colors.white),
+            tooltip: "Manage Doctors",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AdminDoctorPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),

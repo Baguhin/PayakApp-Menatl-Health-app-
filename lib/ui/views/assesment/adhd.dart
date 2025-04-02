@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../survey_results/adhd_result_screen.dart';
+import '../survey_results/assestment.dart';
 
 class ADHDTestScreen extends StatefulWidget {
   const ADHDTestScreen({super.key});
@@ -78,7 +78,8 @@ class _ADHDTestScreenState extends State<ADHDTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/adhd/analyze-adhd'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/adhd/analyze-adhd'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

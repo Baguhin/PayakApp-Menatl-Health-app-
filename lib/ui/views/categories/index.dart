@@ -1,121 +1,133 @@
 import 'package:flutter/material.dart';
+import 'models.dart';
+import 'musicplayer.dart';
+import 'services/music_services.dart';
 
-import 'RelaxationPlayerPage.dart';
-
-class RelaxPage extends StatelessWidget {
-  const RelaxPage({super.key});
+class MusicScreen extends StatefulWidget {
+  const MusicScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return _RelaxPagePage();
+  // ignore: library_private_types_in_public_api
+  _MusicScreenState createState() => _MusicScreenState();
+}
+
+class _MusicScreenState extends State<MusicScreen> {
+  late Future<List<Music>> musicList;
+
+  @override
+  void initState() {
+    super.initState();
+    musicList = MusicService().fetchMeditationMusic('calming sounds');
   }
-}
-
-class _RelaxPagePage extends StatefulWidget {
-  @override
-  _SleepStoriesPageState createState() => _SleepStoriesPageState();
-}
-
-class _SleepStoriesPageState extends State<_RelaxPagePage> {
-  final List<Map<String, String>> _sleepStories = [
-    {
-      'title':
-          'Alpha Waves Heal The Whole Body and Spirit, Emotional, Physical, Mental & Spiritual Healing',
-      'videoId': 'u3papaX85MA',
-    },
-    {
-      'title':
-          'Relaxing Music for Meditation. Calming Music for Stress Relief, Yoga',
-      'videoId': '29IY8aiOnyE',
-    },
-    {
-      'title':
-          'Ultra Healing Relaxing Music for Nervous Disorders, Depression. Restores Mental Health',
-      'videoId': 'Y9iM7HF3nDw',
-    },
-    {
-      'title':
-          'Relaxing music Relieves stress, Anxiety and Depression 🌿 Heals the Mind, body and Soul - Deep Sleep',
-      'videoId': 'I3OJUwILelU',
-    },
-    {
-      'title':
-          'Beautiful Relaxing Music - Healing Music For Health And Calming The Nervous System, Deep Relaxation',
-      'videoId': 'VbT2wQq5jQY',
-    },
-    {
-      'title':
-          'Tibetan Flute Healing Stops Overthinking, Eliminates Stress, Anxiety and Calms the Mind',
-      'videoId': 'Wi_dQEtX4AQ',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Relaxation'),
-        backgroundColor: Colors.deepPurple,
+        title: const Text('Meditation Music'),
+        backgroundColor: Colors.teal,
+        elevation: 4,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.deepPurple.shade100,
-              Colors.deepPurple.shade300,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _sleepStories.length,
-                itemBuilder: (context, index) {
-                  final story = _sleepStories[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 5,
-                    child: ListTile(
-                      leading: const Icon(Icons.spa,
-                          color: Colors.deepPurple, size: 30), // Updated icon
-                      title: Text(
-                        story['title']!,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      subtitle: const Text(
-                        'Tap to play',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RelaxationPlayerPage(
-                              videoId: story['videoId']!,
-                              title: story['title']!,
+      body: FutureBuilder<List<Music>>(
+        future: musicList,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No music found'));
+          } else {
+            final music = snapshot.data!;
+
+            return ListView.builder(
+              itemCount: music.length,
+              itemBuilder: (context, index) {
+                final musicItem = music[index];
+
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: InkWell(
+                    onTap: () => _navigateToMusicPlayer(context, musicItem),
+                    borderRadius: BorderRadius.circular(15),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        children: [
+                          // Music Image (you can replace with an actual image URL)
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.teal,
+                              image: DecorationImage(
+                                image: AssetImage(
+                                    'assets/images21/music.png'), // Add your image
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        );
-                      },
+                          const SizedBox(width: 15),
+                          // Music Title and Description
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  musicItem.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  musicItem.description,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Play Icon Button
+                          const Icon(
+                            Icons.play_arrow,
+                            size: 30,
+                            color: Colors.teal,
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  // Navigate to the MusicPlayerScreen to play the music
+  void _navigateToMusicPlayer(BuildContext context, Music musicItem) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return MusicPlayerScreen(music: musicItem, preference: '');
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
       ),
     );
   }

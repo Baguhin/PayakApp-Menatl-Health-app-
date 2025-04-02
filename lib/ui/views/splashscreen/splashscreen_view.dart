@@ -19,22 +19,19 @@ class SplashscreenView extends StackedView<SplashscreenViewModel> {
     return AnimatedSplashScreen(
       splash: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/logs.png', // Ensure the image is correctly placed in assets
+              'assets/images21/logs.png',
               fit: BoxFit.cover,
             ),
           ),
-          // Bottom Positioned Lottie Animation
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(
-                  bottom: 50), // Adjust spacing from bottom
+              padding: const EdgeInsets.only(bottom: 50),
               child: LottieBuilder.asset(
                 'assets/loading_animation.json',
-                height: 100, // Adjust height for a balanced look
+                height: 100,
                 width: 100,
               ),
             ),
@@ -58,9 +55,6 @@ class SplashscreenView extends StackedView<SplashscreenViewModel> {
               ),
             );
           } else if (snapshot.hasData) {
-            if (snapshot.data == 'johnchrisbaguhin@gmail.com') {
-              return const SuperAdminDashboardView();
-            }
             switch (snapshot.data) {
               case 'superadmin':
                 return const SuperAdminDashboardView();
@@ -85,6 +79,7 @@ class SplashscreenView extends StackedView<SplashscreenViewModel> {
   SplashscreenViewModel viewModelBuilder(BuildContext context) =>
       SplashscreenViewModel();
 
+  /// ✅ Fetch User Role from Firebase Authentication & Realtime Database
   Future<String?> checkUserAuthentication() async {
     try {
       final FirebaseAuth auth = FirebaseAuth.instance;
@@ -92,22 +87,42 @@ class SplashscreenView extends StackedView<SplashscreenViewModel> {
 
       if (user != null) {
         if (kDebugMode) {
-          print("User is logged in: ${user.email}");
+          print("✅ User logged in: ${user.email}");
         }
+
         DatabaseReference userRef =
             FirebaseDatabase.instance.ref().child('users').child(user.uid);
-        DataSnapshot snapshot = await userRef.get();
+        DatabaseEvent event = await userRef.once();
+        DataSnapshot snapshot = event.snapshot;
 
-        if (snapshot.exists) {
-          // ignore: unused_local_variable
-          final userData = snapshot.value as Map;
-          return user.email;
+        if (snapshot.exists && snapshot.value != null) {
+          Map<String, dynamic> userData =
+              Map<String, dynamic>.from(snapshot.value as Map);
+
+          // ✅ Check for superadmin by email
+          if (user.email == "johnchrisbaguhin@gmail.com") {
+            return 'superadmin';
+          }
+
+          // ✅ If "role" exists, use it. Otherwise, check "isAdmin"
+          if (userData.containsKey('role')) {
+            String role = userData['role'].toString().trim().toLowerCase();
+            if (kDebugMode) {
+              print("✅ User role from Firebase: $role");
+            }
+            return role;
+          } else if (userData.containsKey('isAdmin') &&
+              userData['isAdmin'] == true &&
+              userData.containsKey('isEnabled') &&
+              userData['isEnabled'] == true) {
+            return 'admin'; // ✅ Default to "admin" if isAdmin is true and user is enabled
+          }
         }
       }
-      return null;
+      return null; // If user data or role does not exist
     } catch (e) {
       if (kDebugMode) {
-        print('Error in authentication check: $e');
+        print('❌ Error in authentication check: $e');
       }
       return null;
     }

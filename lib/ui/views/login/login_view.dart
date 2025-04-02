@@ -25,7 +25,7 @@ class LoginView extends StatelessWidget {
                   children: [
                     // App Logo
                     Image.asset(
-                      'assets/images/logo.png',
+                      'assets/images21/logo.png',
                       height: 120, // Slightly bigger logo for emphasis
                       width: 120,
                     ),
@@ -70,9 +70,21 @@ class LoginView extends StatelessWidget {
                       child: Column(
                         children: [
                           // Email Input
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'E-mail or Mobile Number',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
                           TextField(
+                            maxLines: 1,
                             decoration: InputDecoration(
-                              labelText: 'E-mail or Mobile Number',
                               prefixIcon:
                                   const Icon(Icons.email, color: Colors.teal),
                               border: OutlineInputBorder(
@@ -87,10 +99,21 @@ class LoginView extends StatelessWidget {
                           const SizedBox(height: 15),
 
                           // Password Input
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Password',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
                           TextField(
                             obscureText: true,
                             decoration: InputDecoration(
-                              labelText: 'Password',
                               prefixIcon:
                                   const Icon(Icons.lock, color: Colors.teal),
                               border: OutlineInputBorder(
@@ -109,9 +132,7 @@ class LoginView extends StatelessWidget {
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
-                              onTap: () {
-                                // TODO: Handle forgot password
-                              },
+                              onTap: () {},
                               child: const Text(
                                 'Forgot password?',
                                 style: TextStyle(

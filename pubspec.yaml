@@ -39,7 +39,7 @@ dependencies:
   table_calendar: ^3.1.2
   in_app_review: ^2.0.9
   youtube_player_flutter: ^9.1.1
-  webview_flutter: ^4.10.0
+  webview_flutter: ^4.0.0
   firebase_database: ^11.1.4
   flutter_map: ^7.0.2
   image_picker: ^1.1.2
@@ -56,6 +56,19 @@ dependencies:
   auto_size_text: ^3.0.0
   flutter_launcher_icons: ^0.14.3
   flutter_spinkit: ^5.2.1
+  spotify_sdk: ^3.0.2
+  flutter_animate: ^4.5.2
+  fluttertoast: ^8.2.12
+  font_awesome_flutter: ^10.8.0
+  hexcolor: ^3.0.1
+  agora_rtc_engine: ^6.5.1
+  permission_handler: ^11.4.0
+  flutter_dotenv: ^5.2.1
+  liquid_progress_indicator_v2: ^0.5.0
+  carousel_slider: ^5.0.0
+  animated_toggle_switch: ^0.8.4
+  simple_animation_progress_bar: ^1.8.2
+  
   
   
   
@@ -100,15 +113,15 @@ flutter:
   
     - assets/user_1.jpg
     - assets/tae/hamburger.svg
-    - assets/images/user.jpg
-    - assets/images/happy.png
-    - assets/images/calm.png
-    - assets/images/relax.png
-    - assets/images/focus.png
-    - assets/images/meetup.png
-    - assets/images/meditation.png
+    - assets/images21/user.jpg
+    - assets/images21/happy.png
+    - assets/images21/calm.png
+    - assets/images21/relax.png
+    - assets/images21/focus.png
+    - assets/images21/meetup.png
+    - assets/images21/meditation.png
     - assets/img/
-    - assets/images/
+    - assets/images21/
     - assets/tae/
     - assets/meditation/
     - assets/bg_home_border.svg
@@ -124,14 +137,42 @@ flutter:
     - assets/meditatee.png
     - assets/videos/session1.mp4
     - assets/meditation/breathe.png
-    - assets/images/calm1.jpg
-    - assets/images/calm2.jpg
-    - assets/images/calm3.jpg
-    - assets/images/calm4.jpg
+    - assets/images21/calm1.jpg
+    - assets/images21/calm2.jpg
+    - assets/images21/calm3.jpg
+    - assets/images21/calm4.jpg
     - assets/icons/news.png
     - images/
-    - assets/images/logs.png
+    - assets/images21/logs.png
     - assets/loading/splash.json
+    - assets/images21/music.png
+    - assets/images/sign-in.png
+    - assets/icons_/
+    - assets/icons_/icons/bg.svg
+    - assets/icons_/icons/clock.svg
+    - assets/icons_/icons/K10_survey.jpg
+    - assets/images/detail_illustration.png
+    - assets/images/doctor1.png
+    - assets/images/doctor2.png
+    - assets/images/doctor3.png
+    - assets/images/onboarding_illustration.png
+    - assets/icons_/icons/psychiatrist.png
+    - assets/images/mentalHealth.png
+    - assets/images/google-logo.png
+    - assets/images/ReliveLogo.png
+    - assets/images/GetStarted.png
+    - assets/settings.png
+    - assets/appointment.png
+    - assets/patient.png
+    - assets/available.png
+    - assets/interaction.png
+    - assets/report.png
+    - assets/fitness_app/
+    - assets/images/
+    - assets/images/yoga1.jpg
+    - assets/images/yoga2.jpg
+    - assets/images/yoga3.jpg
+    - assets/images/yoga4.jpg
     
 
 

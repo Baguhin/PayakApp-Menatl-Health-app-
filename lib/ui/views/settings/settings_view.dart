@@ -213,12 +213,18 @@ class SettingsView extends StackedView<SettingsViewModel> {
     if (user != null) {
       final DatabaseReference userRef =
           FirebaseDatabase.instance.ref('users/${user.uid}');
-      await userRef.update({'isLoggedIn': false});
+
+      // Don't await update to avoid delay
+      userRef.update({'isLoggedIn': false});
     }
 
-    await FirebaseAuth.instance.signOut();
-    FirebaseDatabase.instance.goOffline();
+    // Sign out the user and go offline in parallel
+    await Future.wait([
+      FirebaseAuth.instance.signOut(),
+      FirebaseDatabase.instance.goOffline(),
+    ]);
 
+    // Navigate immediately after calling logout
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginView(title: '')),

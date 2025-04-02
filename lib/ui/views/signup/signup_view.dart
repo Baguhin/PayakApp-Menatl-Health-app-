@@ -28,7 +28,7 @@ class SignupView extends StatelessWidget {
                       // Logo Icon
                       // App Logo
                       Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images21/logo.png',
                         height: 120, // Slightly bigger logo for emphasis
                         width: 120,
                       ),

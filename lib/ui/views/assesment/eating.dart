@@ -80,7 +80,7 @@ class _EatingTestScreenState extends State<EatingDisorderTestScreen> {
 
       final response = await http.post(
         Uri.parse(
-            'http://192.168.212.120:5000/api/eating-disorder/analyze-eating-disorder'),
+            'https://legit-backend-iqvk.onrender.com/api/eating-disorder/analyze-eating-disorder'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

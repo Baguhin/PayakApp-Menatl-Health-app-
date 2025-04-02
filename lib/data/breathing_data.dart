@@ -5,31 +5,31 @@ import 'package:tangullo/modals/breathing_modal.dart';
 
 const BREATHINGDATA = [
   BreathingModal(
-    image: 'assets/images/pursedlip.jpg',
+    image: 'assets/images21/pursedlip.jpg',
     name: 'Pursed Lip Breathing',
     duration: '60', // Set to 60 seconds
     index: '0',
   ),
   BreathingModal(
-    image: 'assets/images/equalbreathing.jpg',
+    image: 'assets/images21/equalbreathing.jpg',
     name: 'Equal Breathing',
     duration: '60', // Set to 60 seconds
     index: '1',
   ),
   BreathingModal(
-    image: 'assets/images/resonance.png',
+    image: 'assets/images21/resonance.png',
     name: 'Resonance Breathing',
     duration: '60', // Set to 60 seconds
     index: '2',
   ),
   BreathingModal(
-    image: 'assets/images/sitalibreathing.jpg',
+    image: 'assets/images21/sitalibreathing.jpg',
     name: 'Sitali Breathing',
     duration: '60', // Set to 60 seconds
     index: '3',
   ),
   BreathingModal(
-    image: 'assets/images/bellybreathing.jpg',
+    image: 'assets/images21/bellybreathing.jpg',
     name: 'Belly Breathing',
     duration: '60', // Set to 60 seconds
     index: '4',

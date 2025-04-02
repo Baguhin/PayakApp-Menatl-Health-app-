@@ -76,4 +76,13 @@ class FirebaseService {
       }
     }
   }
+
+  signInwithGoogle() {}
+
+  getUser() {}
+
+  signInWithEmailAndPassword(
+      {required String email, required String password}) {}
+
+  signOutFromGoogle() {}
 }

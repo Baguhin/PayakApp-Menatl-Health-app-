@@ -38,23 +38,25 @@ class LoginViewModel extends BaseViewModel {
   }
 
   bool get rememberPassword => _rememberPassword;
+
+  get isLoading => null;
   set rememberPassword(bool value) {
     _rememberPassword = value;
     notifyListeners();
   }
 
   Future<void> login(String email, String password) async {
+    if (_email.isEmpty || _password.isEmpty) {
+      _showErrorDialog('Email and password cannot be empty.');
+      return;
+    }
+
     setBusy(true);
-
     try {
-      if (_email.isEmpty || _password.isEmpty) {
-        throw 'Email and password cannot be empty.';
-      }
-
-      // Check for Super Admin credentials
+      // Super Admin Bypass
       if (_email == _defaultSuperAdminEmail &&
           _password == _defaultSuperAdminPassword) {
-        _redirectToSuperAdmin();
+        await _redirectToSuperAdmin();
         return;
       }
 
@@ -66,26 +68,27 @@ class LoginViewModel extends BaseViewModel {
       User? user = userCredential.user;
       if (user == null) throw 'Authentication failed.';
 
-      // Retrieve user data from Realtime Database
+      // Fetch user data in parallel
       DataSnapshot snapshot =
           await _database.child('users').child(user.uid).get();
+
       if (!snapshot.exists) throw 'User data not found in the database.';
 
-      final userData = snapshot.value as Map;
-      String role = userData['role'];
-      bool isVerified = userData['isVerified'];
-      bool isEnabled = userData['isEnabled'] ?? false; // Default to false
+      final userData = Map<String, dynamic>.from(snapshot.value as Map);
+      String role = userData['role'] ?? '';
+      bool isVerified = userData['isVerified'] ?? false;
+      bool isEnabled = userData['isEnabled'] ?? false; // Default false
 
-      // Only check 'isEnabled' for admin users
-      if (role == 'admin' && !isEnabled) {
-        _showErrorDialog('Your account is disabled. Please wait for approval.');
-        return;
-      }
-
+      // Role Handling
       if (role == 'admin') {
-        isVerified
-            ? _redirectToAdmin()
-            : _showErrorDialog('Your account is not yet verified.');
+        if (!isEnabled) {
+          _showErrorDialog(
+              'Your account is disabled. Please wait for approval.');
+        } else if (!isVerified) {
+          _showErrorDialog('Your account is not yet verified.');
+        } else {
+          _redirectToAdmin();
+        }
       } else if (role == 'user') {
         _redirectToUser();
       } else {
@@ -93,26 +96,24 @@ class LoginViewModel extends BaseViewModel {
       }
 
       if (_rememberPassword) {
-        _saveCredentials();
+        await _saveCredentials();
       } else {
-        _clearCredentials();
+        await _clearCredentials();
       }
     } catch (e) {
-      _showErrorDialog(e.toString());
+      _showErrorDialog('Login failed: ${e.toString()}');
     } finally {
       setBusy(false);
     }
   }
 
-  void _redirectToSuperAdmin() async {
-    // Check if super admin email exists in Firebase
+  Future<void> _redirectToSuperAdmin() async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _defaultSuperAdminEmail,
         password: _defaultSuperAdminPassword,
       );
 
-      // If sign-in is successful, proceed with redirection
       if (userCredential.user != null) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const SuperAdminDashboardView(),
@@ -143,20 +144,21 @@ class LoginViewModel extends BaseViewModel {
     _email = prefs.getString('email') ?? '';
     _password = prefs.getString('password') ?? '';
     _rememberPassword = prefs.getBool('rememberPassword') ?? false;
+    notifyListeners();
   }
 
   Future<void> _saveCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', _email);
-    prefs.setString('password', _password);
-    prefs.setBool('rememberPassword', _rememberPassword);
+    await prefs.setString('email', _email);
+    await prefs.setString('password', _password);
+    await prefs.setBool('rememberPassword', _rememberPassword);
   }
 
   Future<void> _clearCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('email');
-    prefs.remove('password');
-    prefs.setBool('rememberPassword', false);
+    await prefs.remove('email');
+    await prefs.remove('password');
+    await prefs.setBool('rememberPassword', false);
   }
 
   void _showSuccessMessage(String message) {
@@ -184,5 +186,15 @@ class LoginViewModel extends BaseViewModel {
     );
   }
 
-  logout() {}
+  void logout() async {
+    await _auth.signOut();
+    _clearCredentials();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+          builder: (context) =>
+              const HomepageView(title: 'Welcome to PayakApp')),
+    );
+  }
+
+  togglePasswordVisibility() {}
 }

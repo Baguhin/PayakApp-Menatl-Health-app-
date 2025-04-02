@@ -5,22 +5,22 @@ import 'package:tangullo/modals/calm_modal.dart';
 
 const CALMDATA = [
   CalmModal(
-      image: 'assets/images/calm1.jpg',
+      image: 'assets/images21/calm1.jpg',
       name: 'Breath Focus',
       duration: '10',
       index: '0'),
   CalmModal(
-      image: 'assets/images/calm2.jpg',
+      image: 'assets/images21/calm2.jpg',
       name: 'Deep Calm State',
       duration: '5',
       index: '1'),
   CalmModal(
-      image: 'assets/images/calm3.jpg',
+      image: 'assets/images21/calm3.jpg',
       name: 'Stop. Reset. Continue',
       duration: '4',
       index: '2'),
   CalmModal(
-      image: 'assets/images/calm4.jpg',
+      image: 'assets/images21/calm4.jpg',
       name: 'Go Outside',
       duration: '10',
       index: '3'),

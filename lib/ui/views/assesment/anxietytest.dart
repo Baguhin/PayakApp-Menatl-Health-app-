@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../survey_results/adhd_result_screen.dart';
+import '../survey_results/assestment.dart';
 
 class AnxietyTestScreen extends StatefulWidget {
   const AnxietyTestScreen({super.key});
@@ -79,7 +79,8 @@ class _AnxietyTestScreenState extends State<AnxietyTestScreen> {
       }).toList();
 
       final response = await http.post(
-        Uri.parse('http://192.168.212.120:5000/api/anxiety/analyze-anxiety'),
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/anxiety/analyze-anxiety'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

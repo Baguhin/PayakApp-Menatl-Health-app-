@@ -162,9 +162,9 @@ void main() {
     home: HomeScreen(),
     routes: {
       '/test/depression': (context) => const DepressionTestScreen(),
-      '/test/anxiety': (context) => AnxietyTestScreen(),
+      '/test/anxiety': (context) => const AnxietyTestScreen(),
       '/test/ocd': (context) => const OCDTestScreen(),
-      '/test/stress': (context) => StressTestScreen(),
+      '/test/stress': (context) => const StressTestScreen(),
       '/test/bipolar': (context) => const BipolarTestScreen(),
       '/test/ptsd': (context) => const PTSDTestScreen(),
       '/test/eating': (context) => const EatingDisorderTestScreen(),

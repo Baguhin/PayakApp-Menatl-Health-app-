@@ -6,7 +6,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tangullo/ui/views/admin/anouncement.dart';
-import 'package:tangullo/ui/views/admin/seminar.dart';
 import 'package:tangullo/ui/views/admin/servises_feedback.dart';
 import 'package:tangullo/ui/views/admin/view_reports_page.dart';
 import 'package:tangullo/ui/views/assesment/adhd.dart';
@@ -28,6 +27,7 @@ import 'package:tangullo/ui/views/admin/manageseminar.dart';
 import 'package:tangullo/ui/views/superadmin/adminmanagement.dart';
 
 import 'ui/views/admin/create_doctor_page.dart';
+import 'ui/views/seminar_coping_worksop/create_seminar_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
         '/manageMentalHealthAnnouncements': (context) =>
             const ManageMentalHealthAnnouncementsView(),
         '/mentalHealthSeminarAnnouncements': (context) =>
-            const MentalHealthSeminarAnnouncementsView(),
+            const CreateSeminarPage(),
         '/manageReports': (context) => const managereportPage(),
         '/messages': (context) => const MessagesView(),
         // Route for messaging view

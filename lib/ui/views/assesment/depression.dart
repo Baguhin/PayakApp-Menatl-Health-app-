@@ -80,7 +80,7 @@ class _DepressionTestScreenState extends State<DepressionTestScreen> {
 
       final response = await http.post(
         Uri.parse(
-            'http://192.168.212.120:5000/api/depression/analyze-depression'),
+            'https://legit-backend-iqvk.onrender.com/api/depression/analyze-depression'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({'responses': userResponses}),
       );

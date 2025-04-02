@@ -1,30 +1,32 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tangullo/ui/views/assesment/container.dart';
-
 import 'package:tangullo/ui/views/home/helpline.dart';
 import 'package:tangullo/ui/views/home/peer.dart';
 import 'package:tangullo/ui/views/home/smart_stress.dart';
 import 'package:tangullo/ui/views/meditation/meditation_view.dart';
-import 'package:tangullo/ui/views/mood_tracking%20page/gospel_screen.dart';
 
+import 'package:tangullo/ui/views/mood_tracking%20page/gospel_screen.dart';
 import 'package:tangullo/widgets/task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../mood_tracking page/allreportview.dart';
 
+import '../new_homepage/screens/patient_dashboard/my_diary/my_diary_screen.dart';
 import 'userfeedback.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   final String userName;
 
   const Home({super.key, required this.userName});
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   static const List<String> quotes = [
     "Believe you can and you're halfway there.",
     "The only way to do great work is to love what you do.",
@@ -34,6 +36,25 @@ class Home extends StatelessWidget {
     "Your limitation—it's only your imagination.",
     "Push yourself, because no one else is going to do it for you.",
   ];
+
+  late AnimationController _animationController;
+
+  get userName => null;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +83,7 @@ class Home extends StatelessWidget {
           const SizedBox(height: 30),
           _buildTodayTaskTitle(color),
           const SizedBox(height: 20),
-          _buildPeerGroupTask(
-              color, context), // Pass both color and context here
+          _buildPeerGroupTask(color, context),
           const SizedBox(height: 30),
           _buildMeditationTask(context),
           const SizedBox(height: 30),
@@ -94,7 +114,7 @@ class Home extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Hello, $userName!',
+                  'Hello, ${widget.userName}!',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -111,6 +131,8 @@ class Home extends StatelessWidget {
               const SmartStress()),
           _buildDrawerItem(
               context, Icons.feedback, 'User Feedback', const FeedbackPage()),
+          _buildDrawerItem(
+              context, Icons.track_changes, 'My Diary', const MyDiaryScreen()),
         ],
       ),
     );
@@ -195,7 +217,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Joy',
-              'assets/images/happy.png',
+              'assets/images21/happy.png',
               const Color.fromARGB(255, 255, 193, 7), // Yellow for Joy
             ),
             const SizedBox(width: 16),
@@ -203,7 +225,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Fear',
-              'assets/images/calm.png',
+              'assets/images21/calm.png',
               const Color.fromARGB(255, 63, 81, 181), // Blue for Fear
             ),
             const SizedBox(width: 16),
@@ -211,7 +233,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Disgust',
-              'assets/images/relax.png',
+              'assets/images21/relax.png',
               const Color.fromARGB(255, 76, 175, 80), // Green for Disgust
             ),
             const SizedBox(width: 16),
@@ -219,7 +241,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Anger',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(255, 244, 67, 54), // Red for Anger
             ),
             const SizedBox(width: 16),
@@ -227,7 +249,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Envy',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(255, 85, 107, 47), // Olive for Envy
             ),
             const SizedBox(width: 16),
@@ -235,7 +257,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Embarrassment',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(
                   255, 255, 87, 34), // Deep Orange for Embarrassment
             ),
@@ -244,7 +266,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Ennui',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(255, 158, 158, 158), // Grey for Ennui
             ),
             const SizedBox(width: 16),
@@ -252,7 +274,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Nostalgia',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(255, 121, 85, 72), // Brown for Nostalgia
             ),
             const SizedBox(width: 16),
@@ -260,7 +282,7 @@ class Home extends StatelessWidget {
               context,
               color,
               'Sadness',
-              'assets/images/focus.png',
+              'assets/images21/focus.png',
               const Color.fromARGB(255, 33, 150, 243), // Light Blue for Sadness
             ),
           ],
@@ -464,7 +486,7 @@ class Home extends StatelessWidget {
         icon: Icons.announcement,
         color: color.primary,
         assetName:
-            'assets/images/meetup.png', // Update with the appropriate image if needed
+            'assets/images21/meetup.png', // Update with the appropriate image if needed
         onTap: () {},
 
         padding: EdgeInsets.symmetric(
@@ -522,7 +544,7 @@ class Home extends StatelessWidget {
         description: 'A guided meditation session.',
         icon: Icons.self_improvement,
         color: Colors.green,
-        assetName: 'assets/images/meditation.png',
+        assetName: 'assets/images21/meditation.png',
         onTap: () {},
         // Adjust the Task widget layout based on screen width
         padding: EdgeInsets.symmetric(

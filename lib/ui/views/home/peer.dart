@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../who/newspage.dart';
+import '../seminar_coping_worksop/get_all_seminar.dart';
+import 'challengesUI.dart';
 
 class PeerGroupView extends StatelessWidget {
   const PeerGroupView({Key? key}) : super(key: key);
@@ -33,11 +35,18 @@ class PeerGroupView extends StatelessWidget {
           children: [
             _buildEventCard(
               context,
-              'Mental Health Workshop',
+              'Comunity Challenges and wellness Goals',
               'A workshop on mental health awareness and support.',
               Icons.event,
-              'assets/images/workshop.png',
-              () {},
+              'assets/images21/workshop.png',
+              () {
+                // Navigate to NewsFeedPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ChallengesScreen()),
+                );
+              },
             ),
             const SizedBox(height: 16),
             _buildEventCard(
@@ -46,7 +55,13 @@ class PeerGroupView extends StatelessWidget {
               'Learn about effective coping strategies for stress.',
               Icons.school,
               'assets/img/r1.png',
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SeminarFeedPage()),
+                );
+              },
             ),
             const SizedBox(height: 16),
             _buildEventCard(
