@@ -73,6 +73,7 @@ dependencies:
   pedometer: ^4.0.2
   tflite_flutter: ^0.11.0
   camera: ^0.11.0+2
+  animations: ^2.0.11
   
   
   
@@ -180,7 +181,7 @@ flutter:
     - assets/images/yoga4.jpg
     - assets/tflite_for_live/model.tflite
     - assets/tflite_for_live/labels.txt
-    - assets/hehe.gif
+    - assets/videos/animation.json
     
     
 

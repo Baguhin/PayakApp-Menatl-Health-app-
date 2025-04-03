@@ -1,89 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tangullo/ui/views/home/sleep/live_detection/livedetection.dart';
+import 'package:animations/animations.dart'; // Import for smooth transition animations
 
-class Landing extends StatelessWidget {
+class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
 
   @override
+  _LandingState createState() => _LandingState();
+}
+
+class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Fade-in animation for smooth page transition
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    )..forward();
+
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Live Emotion Detection',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+    return FadeTransition(
+      opacity: _fadeAnimation, // Apply fade-in animation
+      child: Scaffold(
+        backgroundColor: Colors.white, // Clean background
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Live Emotion Detection',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
+          backgroundColor: Colors.deepPurpleAccent,
+          elevation: 4,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
         ),
-        backgroundColor: Colors.deepPurpleAccent,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 30),
-              Image.asset(
-                'assets/hehe.gif', // Ensure this asset exists in pubspec.yaml
-                width: 150,
-                height: 150,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Real-Time Emotion Detection',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurpleAccent,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                // ✅ Enhanced Lottie animation
+                Lottie.asset(
+                  'assets/videos/animation.json',
+                  width: 250,
+                  height: 250,
+                  fit: BoxFit.contain,
+                  frameRate: FrameRate.max, // Smooth animation playback
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Analyze facial expressions live using AI-powered emotion detection.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 40),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                const SizedBox(height: 20),
+                const Text(
+                  'Real-Time Emotion Detection',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurpleAccent,
+                  ),
                 ),
-                elevation: 8,
-                color: Colors.deepPurpleAccent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Home()),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 25, horizontal: 50),
-                    child: Column(
-                      children: const [
-                        Icon(Icons.videocam, color: Colors.white, size: 60),
-                        SizedBox(height: 12),
-                        Text(
-                          'Start Live Detection',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                const SizedBox(height: 12),
+                const Text(
+                  'Analyze facial expressions live using AI-powered emotion detection.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 40),
+                // ✅ Improved button with smooth transition animation
+                OpenContainer(
+                  transitionType: ContainerTransitionType.fadeThrough,
+                  transitionDuration: const Duration(milliseconds: 600),
+                  openBuilder: (context, _) => const Home(),
+                  closedElevation: 8,
+                  closedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  closedColor: Colors.deepPurpleAccent,
+                  closedBuilder: (context, openContainer) => InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: openContainer,
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                      child: Column(
+                        children: [
+                          Icon(Icons.videocam, color: Colors.white, size: 60),
+                          SizedBox(height: 12),
+                          Text(
+                            'Start Live Detection',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 60),
-              const Text(
-                'Powered by AI & Deep Learning',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 60),
+                const Text(
+                  'Powered by AI & Deep Learning',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),
