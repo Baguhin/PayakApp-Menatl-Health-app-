@@ -860,6 +860,13 @@ class _MealsState extends State<Meals> {
           GestureDetector(
             onTap: () async {
               users = auth.currentUser!;
+
+              // Ensure foodType is not empty
+              if (foodType.isEmpty) {
+                print("Error: Meal Type (foodType) cannot be empty");
+                return; // Exit if the foodType is empty
+              }
+
               await DatabaseService(uid: users.uid).updateSetGoalData(
                   foodType,
                   rCalories.toString(),

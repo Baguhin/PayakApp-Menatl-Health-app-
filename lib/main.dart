@@ -1,11 +1,13 @@
-// ignore_for_file: equal_keys_in_map, deprecated_member_use
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:tangullo/ui/views/admin/admindashboard.dart';
 import 'package:tangullo/ui/views/admin/anouncement.dart';
+import 'package:tangullo/ui/views/admin/create_doctor_page.dart';
+import 'package:tangullo/ui/views/admin/manageReport.dart';
+import 'package:tangullo/ui/views/admin/manageseminar.dart';
 import 'package:tangullo/ui/views/admin/servises_feedback.dart';
 import 'package:tangullo/ui/views/admin/view_reports_page.dart';
 import 'package:tangullo/ui/views/assesment/adhd.dart';
@@ -16,18 +18,16 @@ import 'package:tangullo/ui/views/assesment/eating.dart';
 import 'package:tangullo/ui/views/assesment/ocdtest.dart';
 import 'package:tangullo/ui/views/assesment/ptsd.dart';
 import 'package:tangullo/ui/views/assesment/stress.dart';
-import 'package:tangullo/ui/views/navigation/homepage_view.dart';
 import 'package:tangullo/ui/views/login/login_view.dart';
+import 'package:tangullo/ui/views/messages/messages_view.dart';
+import 'package:tangullo/ui/views/navigation/homepage_view.dart';
+import 'package:tangullo/ui/views/providers/sleep.dart';
+import 'package:tangullo/ui/views/providers/providers.dart'; // Ensure StepCounterProvider is also imported
+import 'package:provider/provider.dart';
+import 'package:tangullo/ui/views/seminar_coping_worksop/create_seminar_page.dart';
 import 'package:tangullo/ui/views/signup/signup_view.dart';
 import 'package:tangullo/ui/views/splashscreen/splashscreen_view.dart';
-import 'package:tangullo/ui/views/messages/messages_view.dart';
-import 'package:tangullo/ui/views/admin/admindashboard.dart';
-import 'package:tangullo/ui/views/admin/manageReport.dart';
-import 'package:tangullo/ui/views/admin/manageseminar.dart';
 import 'package:tangullo/ui/views/superadmin/adminmanagement.dart';
-
-import 'ui/views/admin/create_doctor_page.dart';
-import 'ui/views/seminar_coping_worksop/create_seminar_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +48,16 @@ void main() async {
   // Attempt to create the Super Admin account
   await createSuperAdmin();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      // Use MultiProvider to provide multiple providers
+      providers: [
+        ChangeNotifierProvider(create: (context) => StepCounterProvider()),
+        ChangeNotifierProvider(create: (context) => SleepMonitorProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 /// Creates a Super Admin account in Firebase Auth and adds it to Realtime Database.

@@ -154,7 +154,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
   Widget _buildExerciseListItem(int index) {
     return AnimatedOpacity(
       opacity: 1.0,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         elevation: 5,
@@ -163,13 +163,14 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           contentPadding: const EdgeInsets.all(15),
           title: Text(
             exercises[index]['name'],
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
               color: Colors.black87,
             ),
           ),
-          trailing: Icon(Icons.play_circle_fill, color: Colors.green, size: 30),
+          trailing:
+              const Icon(Icons.play_circle_fill, color: Colors.green, size: 30),
           onTap: () {
             String videoId = exercises[index]['id'].toString();
             if (videoId == "0") {
@@ -197,11 +198,11 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
         );
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               offset: Offset(0, 4),
@@ -214,7 +215,8 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
               child: Image.network(
                 videoList[index]['thumbnail'],
                 width: double.infinity,

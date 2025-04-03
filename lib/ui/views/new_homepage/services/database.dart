@@ -4,10 +4,21 @@ import 'package:intl/intl.dart';
 class DatabaseService {
   final String uid;
 
-  DatabaseService({required this.uid});
+  DatabaseService({required this.uid}) {
+    if (uid.isEmpty) {
+      throw ArgumentError('UID cannot be empty');
+    }
+  }
 
   // Get formatted date for collections
-  String get formattedDate => DateFormat('yyyy-MM-dd').format(DateTime.now());
+  String get formattedDate {
+    final date = DateTime.now();
+    final formatted = DateFormat('yyyy-MM-dd').format(date);
+    if (formatted.isEmpty) {
+      throw ArgumentError('Formatted date is empty');
+    }
+    return formatted;
+  }
 
   // collection reference
   final CollectionReference myCollection =
@@ -15,6 +26,7 @@ class DatabaseService {
 
   Future<void> updateUserData(
       String name, String username, String email, String type) async {
+    if (uid.isEmpty) throw ArgumentError('UID is empty');
     return await myCollection.doc(uid).set({
       'name': name,
       'username': username,
@@ -33,6 +45,7 @@ class DatabaseService {
     String about,
     String type,
   ) async {
+    if (uid.isEmpty) throw ArgumentError('UID is empty');
     return await myCollection.doc(uid).set({
       'name': name,
       'username': username,
@@ -46,12 +59,17 @@ class DatabaseService {
   }
 
   // Food total data methods
-  CollectionReference get foodTotalData => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('Total');
+  CollectionReference get foodTotalData {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('Total');
+  }
 
   Future<void> updateTotalFoodData(
       String typeOfFood,
@@ -61,6 +79,7 @@ class DatabaseService {
       String fat,
       String sugars,
       String cholesterol) async {
+    if (typeOfFood.isEmpty) throw ArgumentError('Type of Food is empty');
     return await foodTotalData.doc(typeOfFood).set({
       'Total Calories': calories,
       'Total Carbohydrate': carbo,
@@ -72,15 +91,25 @@ class DatabaseService {
   }
 
   // Food goal methods
-  CollectionReference get foodSetGoal => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('Target');
+  CollectionReference get foodSetGoal {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('Target');
+  }
 
   Future<void> updateSetGoalData(String mealType, String calories, String carbo,
       String protein, String fat, String sugars, String cholesterol) async {
+    // Check if mealType is not empty
+    if (mealType.isEmpty) {
+      throw ArgumentError('Meal Type cannot be empty');
+    }
+
     return await foodSetGoal.doc(mealType).set({
       'Target Calories': calories,
       'Target Carbohydrate': carbo,
@@ -92,12 +121,17 @@ class DatabaseService {
   }
 
   // Breakfast data methods
-  CollectionReference get foodCollectionBreakfast => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('breakfast');
+  CollectionReference get foodCollectionBreakfast {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('breakfast');
+  }
 
   Future<void> updateFoodDataBreakfast(
       String foodName,
@@ -108,6 +142,7 @@ class DatabaseService {
       String sugars,
       String cholesterol,
       String servings) async {
+    if (foodName.isEmpty) throw ArgumentError('Food Name is empty');
     return await foodCollectionBreakfast.doc(foodName).set({
       foodName: {
         'Total Calories': calories,
@@ -122,13 +157,19 @@ class DatabaseService {
   }
 
   // Water tracking methods
-  CollectionReference get waterCollection => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('water_track');
+  CollectionReference get waterCollection {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('water_track');
+  }
 
   Future<void> updateWaterData(
       double glasses, double target, String lastSeen, String time) async {
+    if (formattedDate.isEmpty) throw ArgumentError('Formatted date is empty');
     return await waterCollection.doc(formattedDate).set({
       'consumed(ml)': glasses,
       'target(ml)': target,
@@ -138,10 +179,15 @@ class DatabaseService {
   }
 
   // Food total collection
-  CollectionReference get foodCollectionTotal => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track');
+  CollectionReference get foodCollectionTotal {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track');
+  }
 
   Future<void> updateFoodDataTotal(
       int carbohydrate, int protein, int fat) async {
@@ -153,12 +199,17 @@ class DatabaseService {
   }
 
   // Lunch data methods
-  CollectionReference get foodCollectionLunch => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('lunch');
+  CollectionReference get foodCollectionLunch {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('lunch');
+  }
 
   Future<void> updateFoodDataLunch(
       String foodName,
@@ -169,6 +220,7 @@ class DatabaseService {
       String sugars,
       String cholesterol,
       String servings) async {
+    if (foodName.isEmpty) throw ArgumentError('Food Name is empty');
     return await foodCollectionLunch.doc(foodName).set({
       foodName: {
         'Total Calories': calories,
@@ -183,12 +235,17 @@ class DatabaseService {
   }
 
   // Snack data methods
-  CollectionReference get foodCollectionSnack => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('snack');
+  CollectionReference get foodCollectionSnack {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('snack');
+  }
 
   Future<void> updateFoodDataSnack(
       String foodName,
@@ -199,6 +256,7 @@ class DatabaseService {
       String sugars,
       String cholesterol,
       String servings) async {
+    if (foodName.isEmpty) throw ArgumentError('Food Name is empty');
     return await foodCollectionSnack.doc(foodName).set({
       foodName: {
         'Total Calories': calories,
@@ -213,12 +271,17 @@ class DatabaseService {
   }
 
   // Dinner data methods
-  CollectionReference get foodCollectionDinner => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('food_track')
-      .doc(formattedDate)
-      .collection('dinner');
+  CollectionReference get foodCollectionDinner {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('food_track')
+        .doc(formattedDate)
+        .collection('dinner');
+  }
 
   Future<void> updateFoodDataDinner(
       String foodName,
@@ -229,6 +292,7 @@ class DatabaseService {
       String sugars,
       String cholesterol,
       String servings) async {
+    if (foodName.isEmpty) throw ArgumentError('Food Name is empty');
     return await foodCollectionDinner.doc(foodName).set({
       foodName: {
         'Total Calories': calories,
@@ -243,10 +307,15 @@ class DatabaseService {
   }
 
   // Body measurement methods
-  CollectionReference get bodyCollection => FirebaseFirestore.instance
-      .collection('userdata')
-      .doc(uid)
-      .collection('body_track');
+  CollectionReference get bodyCollection {
+    if (uid.isEmpty || formattedDate.isEmpty) {
+      throw ArgumentError('UID or Date is empty');
+    }
+    return FirebaseFirestore.instance
+        .collection('userdata')
+        .doc(uid)
+        .collection('body_track');
+  }
 
   Future<void> updateBodyMeasurementData(
       int height,

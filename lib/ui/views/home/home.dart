@@ -6,10 +6,13 @@ import 'package:lottie/lottie.dart';
 import 'package:tangullo/ui/views/assesment/container.dart';
 import 'package:tangullo/ui/views/home/helpline.dart';
 import 'package:tangullo/ui/views/home/peer.dart';
+import 'package:tangullo/ui/views/home/sleep/live_detection/live_home.dart';
+import 'package:tangullo/ui/views/home/sleep/sleep_tracking.dart';
 import 'package:tangullo/ui/views/home/smart_stress.dart';
 import 'package:tangullo/ui/views/meditation/meditation_view.dart';
 
 import 'package:tangullo/ui/views/mood_tracking%20page/gospel_screen.dart';
+import 'package:tangullo/ui/views/track_workout.dart';
 import 'package:tangullo/widgets/task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../mood_tracking page/allreportview.dart';
@@ -127,12 +130,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _buildDrawerItem(
               context, Icons.assessment, 'Assessment', HomeScreen()),
           _buildDrawerItem(context, Icons.call, 'Helpline', const Helpline()),
-          _buildDrawerItem(context, Icons.batch_prediction, 'Smart Prediction',
-              const SmartStress()),
+          _buildDrawerItem(context, Icons.face_3_rounded, 'Live Face Detection',
+              const Landing()),
           _buildDrawerItem(
               context, Icons.feedback, 'User Feedback', const FeedbackPage()),
           _buildDrawerItem(
               context, Icons.track_changes, 'My Diary', const MyDiaryScreen()),
+          _buildDrawerItem(context, Icons.directions_walk, 'Steps Counter',
+              const StepCounterScreen()),
+          _buildDrawerItem(context, Icons.nightlight_round, 'Sleep Tracker',
+              const SleepMonitorScreen()), // Use an actual screen here
         ],
       ),
     );

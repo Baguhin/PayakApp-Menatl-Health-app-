@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'package:tangullo/ui/views/new_homepage/screens/patient_dashboard/my_diary/water_view.dart';
 import 'package:tangullo/ui/views/new_homepage/screens/patient_dashboard/ui_view/body_measurement.dart';
+import '../../../../track_workout.dart';
 import '../fitness_app_theme.dart';
 import '../ui_view/glass_view.dart';
 import '../ui_view/mediterranean_diet_view.dart';
@@ -93,17 +94,30 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     const int count = 9;
 
     listViews.add(
-      TitleView(
-        titleTxt: 'Diet details',
-        subTxt: 'Track Workout',
-        index: 0,
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: _animationController!,
-            curve: const Interval((1 / count) * 0, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: _animationController!,
+      GestureDetector(
+        onTap: () {
+          // Navigate to the TrackWorkoutScreen when "Track Workout" is tapped
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    const StepCounterScreen()), // Navigate to the new screen
+          );
+        },
+        child: TitleView(
+          titleTxt: 'Diet details',
+          subTxt: 'Track Workout',
+          index: 0,
+          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(
+                  parent: _animationController!,
+                  curve: const Interval((1 / count) * 0, 1.0,
+                      curve: Curves.fastOutSlowIn))),
+          animationController: _animationController!,
+        ),
       ),
     );
+
     listViews.add(
       MediterranesnDietView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(

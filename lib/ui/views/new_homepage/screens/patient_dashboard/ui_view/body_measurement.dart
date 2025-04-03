@@ -60,24 +60,39 @@ class _BodyMeasurementViewState extends State<BodyMeasurementView> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       var sn = snapshot.data!;
-                      height = 0;
-                      weight = 0;
-                      bMW = 0;
-                      bMR = 0;
-                      status = "None";
-                      timeAppeared = "";
+                      double height = 0;
+                      double weight = 0;
+                      double bmw = 0;
+                      double bmr = 0;
+                      String status = "None";
+                      String timeAppeared = "";
+
                       for (var element in sn.docs) {
                         if (element.id == formattedDate) {
-                          height = element.get("height(cm)").toDouble();
-                          weight = element.get("weight(kg)").toDouble();
-                          bMR = element
-                              .get("BMR(Body Metabolic Rate)")
-                              .toDouble();
-                          bMW = element.get("BMW(Body Mass weight)").toDouble();
-                          status = element.get("BMW status");
-                          timeAppeared = element.get("last seen");
+                          // Ensure you are safely parsing values to double
+                          height = double.tryParse(
+                                  element.get("height(cm)").toString()) ??
+                              0.0;
+                          weight = double.tryParse(
+                                  element.get("weight(kg)").toString()) ??
+                              0.0;
+                          bmr = double.tryParse(element
+                                  .get("BMR(Body Metabolic Rate)")
+                                  .toString()) ??
+                              0.0;
+                          bmw = double.tryParse(element
+                                  .get("BMW(Body Mass weight)")
+                                  .toString()) ??
+                              0.0;
+
+                          timeAppeared =
+                              element.get("last seen") ?? "Not available";
                         }
                       }
+
+                      return Container(
+                          // Your widget to display data here
+                          );
                     }
                     return Container(
                       decoration: BoxDecoration(

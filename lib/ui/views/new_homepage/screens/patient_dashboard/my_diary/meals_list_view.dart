@@ -256,26 +256,26 @@ class MealsView extends StatelessWidget {
                     switch (mealsListData!.index) {
                       case 0:
                         getTargetData('breakfast');
-                        return Dinner(
+                        return const Dinner(
                           callingText: "breakfast",
                         );
                       case 1:
                         getTargetData('lunch');
-                        return Dinner(
+                        return const Dinner(
                           callingText: "lunch",
                         );
                       case 2:
                         getTargetData('snack');
-                        return Dinner(
+                        return const Dinner(
                           callingText: "snack",
                         );
                       case 3:
                         getTargetData('dinner');
-                        return Dinner(
+                        return const Dinner(
                           callingText: "dinner",
                         );
                       default:
-                        return Dinner(
+                        return const Dinner(
                           callingText: "dinner",
                         );
                     }
