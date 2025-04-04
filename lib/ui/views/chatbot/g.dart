@@ -21,6 +21,17 @@ class _AdminChatbotState extends State<AdminChatbot> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
 
+  // Function to clean Gemini responses
+  String _sanitizeResponse(String response) {
+    // Remove asterisks, percentages, and other unwanted characters
+    // You can add more characters to remove as needed
+    return response
+        .replaceAll('*', '')
+        .replaceAll('%', '')
+        .replaceAll('#', '')
+        .replaceAll('`', '');
+  }
+
   void _sendRequest() async {
     if (_controller.text.isEmpty) return;
 
@@ -39,8 +50,11 @@ class _AdminChatbotState extends State<AdminChatbot> {
 
     String result = await GeminiService().getResponse(input);
 
+    // Sanitize the response before adding it to messages
+    String cleanedResult = _sanitizeResponse(result);
+
     setState(() {
-      _messages.add(ChatMessage(text: result, isUser: false));
+      _messages.add(ChatMessage(text: cleanedResult, isUser: false));
       _isLoading = false;
     });
 
@@ -49,11 +63,13 @@ class _AdminChatbotState extends State<AdminChatbot> {
 
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 300), () {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 

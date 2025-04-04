@@ -53,7 +53,11 @@ class DoctorContactPage extends StatelessWidget {
   final String imageUrl;
 
   const DoctorContactPage(
-      {super.key, required this.doctor, required this.imageUrl});
+      {super.key,
+      required this.doctor,
+      required this.imageUrl,
+      required Color primaryColor,
+      required Color accentColor});
 
   void _makePhoneCall(BuildContext context, String phoneNumber) async {
     final Uri url = Uri.parse('tel:$phoneNumber');
