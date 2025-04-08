@@ -3,15 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tangullo/ui/views/assesment/container.dart';
+
 import 'package:tangullo/ui/views/home/helpline.dart';
 import 'package:tangullo/ui/views/home/peer.dart';
 import 'package:tangullo/ui/views/home/sleep/live_detection/live_home.dart';
 import 'package:tangullo/ui/views/home/sleep/sleep_tracking.dart';
-import 'package:tangullo/ui/views/home/smart_stress.dart';
+
 import 'package:tangullo/ui/views/meditation/meditation_view.dart';
 
 import 'package:tangullo/ui/views/mood_tracking%20page/gospel_screen.dart';
+
+import 'package:tangullo/ui/views/settings/settings_view.dart';
 import 'package:tangullo/ui/views/track_workout.dart';
 import 'package:tangullo/widgets/task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,262 +40,427 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     "The best way to predict the future is to create it.",
     "Your limitation—it's only your imagination.",
     "Push yourself, because no one else is going to do it for you.",
+    "Mental health is not a destination, but a journey.",
+    "Self-care is how you take your power back.",
+    "You are worthy of your own time and attention.",
   ];
 
   late AnimationController _animationController;
+  final ScrollController _scrollController = ScrollController();
+  bool _showElevation = false;
 
-  get userName => null;
+  // Store the quote once when the state is initialized
+  late String _currentQuote;
 
   @override
   void initState() {
     super.initState();
+    // Select a random quote once during initialization
+    _currentQuote = quotes[Random().nextInt(quotes.length)];
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    _scrollController.addListener(() {
+      // Only update state if the elevation status changes to minimize rebuilds
+      bool shouldShowElevation = _scrollController.offset > 10;
+      if (_showElevation != shouldShowElevation) {
+        setState(() {
+          _showElevation = shouldShowElevation;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme color = Theme.of(context).colorScheme;
+    final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD), // Light blue background
+      backgroundColor:
+          const Color(0xFFF5F7FA), // Lighter, more neutral background
       appBar: AppBar(
-        elevation: 0,
+        elevation: _showElevation ? 4 : 0,
         backgroundColor: color.primary,
-        title: const Text('Home'),
+        leadingWidth: 40,
+        toolbarHeight: 50, // Better height that's not too small
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/tink.png', // Replace with your app logo
+              height: 28,
+              width: 28,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'PayakApp',
+              style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(16),
+          ),
+        ),
       ),
       drawer: _buildDrawer(context),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        children: [
-          _buildWelcomeText(color),
-          const SizedBox(height: 10),
-          _buildInspiringQuote(color),
-          const SizedBox(height: 20),
-          _buildFeelingQuestion(color),
-          const SizedBox(height: 10),
-          _buildMoodSelection(context, color),
-          const SizedBox(height: 30),
-          _buildMoodReportsButton(context, color),
-          const SizedBox(height: 30),
-          _buildTodayTaskTitle(color),
-          const SizedBox(height: 20),
-          _buildPeerGroupTask(color, context),
-          const SizedBox(height: 30),
-          _buildMeditationTask(context),
-          const SizedBox(height: 30),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        // Use NotificationListener for smoother scrolling performance
+        onNotification: (notification) {
+          // Return true to cancel the notification bubbling
+          return true;
+        },
+        child: ListView(
+          controller: _scrollController,
+          padding: EdgeInsets.zero,
+          physics:
+              const BouncingScrollPhysics(), // Add bouncing physics for smoother scroll
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildInspiringQuote(color),
+                  const SizedBox(height: 25),
+                  _buildFeelingQuestion(color),
+                  const SizedBox(height: 15),
+                  _buildMoodSelection(context, color),
+                  const SizedBox(height: 30),
+                  _buildMoodReportsButton(context, color),
+                  const SizedBox(height: 30),
+                  _buildTodayTaskTitle(color),
+                  const SizedBox(height: 15),
+                  _buildPeerGroupTask(color, context),
+                  const SizedBox(height: 20),
+                  _buildMeditationTask(context),
+                  const SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipOval(
-                  child: Image.asset(
-                    'assets/user.jpg',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Hello, ${widget.userName}!',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).primaryColor.withOpacity(0.8),
+              Colors.white,
+            ],
+            stops: const [0, 0.2, 0.2],
           ),
-          _buildDrawerItem(
-              context, Icons.assessment, 'Assessment', HomeScreen()),
-          _buildDrawerItem(context, Icons.call, 'Helpline', const Helpline()),
-          _buildDrawerItem(context, Icons.face_3_rounded, 'Live Face Detection',
-              const Landing()),
-          _buildDrawerItem(
-              context, Icons.feedback, 'User Feedback', const FeedbackPage()),
-          _buildDrawerItem(
-              context, Icons.track_changes, 'My Diary', const MyDiaryScreen()),
-          _buildDrawerItem(context, Icons.directions_walk, 'Steps Counter',
-              const StepCounterScreen()),
-          _buildDrawerItem(context, Icons.nightlight_round, 'Sleep Tracker',
-              const SleepMonitorScreen()), // Use an actual screen here
-        ],
+        ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  ClipOval(
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/user.jpg',
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    'Hello, ${widget.userName}!',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildDrawerItem(
+              context,
+              Icons.settings,
+              'Settings',
+              const SettingsView(),
+              Colors.blueGrey,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.call,
+              'Helpline',
+              const Helpline(),
+              Colors.green,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.face_3_rounded,
+              'Live Face Detection',
+              const Landing(),
+              Colors.purple,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.feedback,
+              'User Feedback',
+              const FeedbackPage(),
+              Colors.amber,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.track_changes,
+              'My Diary',
+              const MyDiaryScreen(),
+              Colors.teal,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.directions_walk,
+              'Steps Counter',
+              const StepCounterScreen(),
+              Colors.indigo,
+            ),
+            _buildDrawerItem(
+              context,
+              Icons.nightlight_round,
+              'Sleep Tracker',
+              const SleepMonitorScreen(),
+              Colors.deepPurple,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDrawerItem(
-      BuildContext context, IconData icon, String title, Widget destination) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destination),
-        );
-      },
-    );
-  }
-
-  Widget _buildWelcomeText(ColorScheme color) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: 'Welcome back,',
-            style: GoogleFonts.alegreya(
-              color: color.onSurface,
-              fontSize: 28,
-              fontWeight: FontWeight.w500,
-            ),
+  Widget _buildDrawerItem(BuildContext context, IconData icon, String title,
+      Widget destination, Color iconColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
           ),
-          TextSpan(
-            text: ' $userName!',
-            style: GoogleFonts.alegreya(
-              color: color.onSurface,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Icon(icon, color: iconColor),
+        ),
+        title: Text(
+          title,
+          style: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
           ),
-        ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destination),
+          );
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
   }
 
   Widget _buildInspiringQuote(ColorScheme color) {
-    final randomQuote = quotes[Random().nextInt(quotes.length)];
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Text(
-        '"$randomQuote"',
-        style: TextStyle(
-          color: color.onSurface,
-          fontSize: 18,
-          fontStyle: FontStyle.italic,
-          fontWeight: FontWeight.w300,
+    // Use the stored quote instead of generating a new one on each build
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.primary.withOpacity(0.8),
+            color.primary,
+          ],
         ),
-        textAlign: TextAlign.center,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: color.primary.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.format_quote,
+                color: Colors.white.withOpacity(0.7),
+                size: 28,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            _currentQuote, // Use the stored quote
+            style: GoogleFonts.lora(
+              color: Colors.white,
+              fontSize: 18,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Icon(
+                Icons.format_quote,
+                color: Colors.white.withOpacity(0.7),
+                size: 28,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildFeelingQuestion(ColorScheme color) {
-    return Text(
-      'How are you feeling today?',
-      style: TextStyle(
-        color: color.onSurface,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 5),
+      child: Text(
+        'How are you feeling today?',
+        style: GoogleFonts.montserrat(
+          color: color.onSurface,
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 
   Widget _buildMoodSelection(BuildContext context, ColorScheme color) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20), // Add vertical padding
-      child: SingleChildScrollView(
+      height: 140,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ListView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildMoodFace(
-              context,
-              color,
-              'Joy',
-              'assets/images21/happy.png',
-              const Color.fromARGB(255, 255, 193, 7), // Yellow for Joy
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Fear',
-              'assets/images21/calm.png',
-              const Color.fromARGB(255, 63, 81, 181), // Blue for Fear
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Disgust',
-              'assets/images21/relax.png',
-              const Color.fromARGB(255, 76, 175, 80), // Green for Disgust
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Anger',
-              'assets/images21/focus.png',
-              const Color.fromARGB(255, 244, 67, 54), // Red for Anger
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Envy',
-              'assets/images21/focus.png',
-              const Color.fromARGB(255, 85, 107, 47), // Olive for Envy
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Embarrassment',
-              'assets/images21/focus.png',
-              const Color.fromARGB(
-                  255, 255, 87, 34), // Deep Orange for Embarrassment
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Ennui',
-              'assets/images21/focus.png',
-              const Color.fromARGB(255, 158, 158, 158), // Grey for Ennui
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Nostalgia',
-              'assets/images21/focus.png',
-              const Color.fromARGB(255, 121, 85, 72), // Brown for Nostalgia
-            ),
-            const SizedBox(width: 16),
-            _buildMoodFace(
-              context,
-              color,
-              'Sadness',
-              'assets/images21/focus.png',
-              const Color.fromARGB(255, 33, 150, 243), // Light Blue for Sadness
-            ),
-          ],
-        ),
+        physics: const BouncingScrollPhysics(),
+        children: [
+          _buildMoodFace(
+            context,
+            color,
+            'Joy',
+            'assets/images21/happy.png',
+            const Color(0xFFFFD700), // Golden Yellow for Joy
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Fear',
+            'assets/images21/calm.png',
+            const Color(0xFF3F51B5), // Indigo for Fear
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Disgust',
+            'assets/images21/relax.png',
+            const Color(0xFF4CAF50), // Green for Disgust
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Anger',
+            'assets/images21/focus.png',
+            const Color(0xFFF44336), // Red for Anger
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Envy',
+            'assets/images21/focus.png',
+            const Color(0xFF556B2F), // Olive for Envy
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Embarrassment',
+            'assets/images21/focus.png',
+            const Color(0xFFFF5722), // Deep Orange for Embarrassment
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Ennui',
+            'assets/images21/focus.png',
+            const Color(0xFF9E9E9E), // Grey for Ennui
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Nostalgia',
+            'assets/images21/focus.png',
+            const Color(0xFF795548), // Brown for Nostalgia
+          ),
+          const SizedBox(width: 16),
+          _buildMoodFace(
+            context,
+            color,
+            'Sadness',
+            'assets/images21/focus.png',
+            const Color(0xFF2196F3), // Light Blue for Sadness
+          ),
+        ],
       ),
     );
   }
@@ -351,102 +518,154 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     return GestureDetector(
       onTap: () => _handleMoodSelection(context, mood),
-      child: MouseRegion(
-        onEnter: (_) => _showMoodPreview(context, mood),
-        onExit: (_) => _hideMoodPreview(context),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: 110,
-          height: 110,
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [moodColor.withOpacity(0.8), moodColor],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: moodColor.withOpacity(0.3),
-                blurRadius: 12,
-                spreadRadius: 1,
-                offset: const Offset(0, 6),
-              ),
+      child: Container(
+        width: 110,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              moodColor.withOpacity(0.7),
+              moodColor,
             ],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Lottie.network(
-                  lottieUrl,
-                  fit: BoxFit.cover,
-                  height: 60,
-                  width: 60,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: moodColor.withOpacity(0.4),
+              blurRadius: 15,
+              spreadRadius: -5,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 70,
+              width: 70,
+              padding: const EdgeInsets.all(5),
+              child: Lottie.network(
+                lottieUrl,
+                fit: BoxFit.contain,
+                animate: true,
+                // Add caching for better performance and to prevent reloading
+                frameRate: FrameRate.max,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              mood,
+              style: GoogleFonts.montserrat(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // These methods are kept for compatibility but not used anymore
+  void _showMoodPreview(BuildContext context, String mood) {}
+  void _hideMoodPreview(BuildContext context) {}
+
+  Widget _buildMoodReportsButton(BuildContext context, ColorScheme color) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: color.primary.withOpacity(0.3),
+            blurRadius: 12,
+            spreadRadius: -5,
+            offset: const Offset(0, 6),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            color.primary,
+            Color.lerp(color.primary, Colors.teal, 0.6) ?? color.primary,
+          ],
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(28),
+          splashColor: Colors.white.withOpacity(0.1),
+          highlightColor: Colors.white.withOpacity(0.05),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MoodReportView(
+                  mood: '',
+                  userId: '',
+                  selectedMood: '',
                 ),
               ),
-              const SizedBox(height: 6),
-              FittedBox(
-                child: Text(
-                  mood,
-                  style: const TextStyle(
+            );
+          },
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.analytics_outlined,
+                    size: 22, color: Colors.white),
+                const SizedBox(width: 10),
+                Text(
+                  'View My Mood Reports',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-// Optional: Show mood preview when hovering over the mood face
-  void _showMoodPreview(BuildContext context, String mood) {
-    // Implement your mood preview logic here (e.g., show a tooltip or popup)
-  }
-
-  void _hideMoodPreview(BuildContext context) {
-    // Implement hiding logic for mood preview here
-  }
-
-  Widget _buildMoodReportsButton(BuildContext context, ColorScheme color) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const MoodReportView(
-                    mood: '',
-                    userId: '',
-                    selectedMood: '',
-                  )),
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: color.primary,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30)), // Rounded button
-      ),
-      child: const Text('View My Mood Reports'),
-    );
-  }
-
   Widget _buildTodayTaskTitle(ColorScheme color) {
-    return Text(
-      'Today\'s Tasks',
-      style: TextStyle(
-        color: color.onSurface,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Today\'s Tasks',
+            style: GoogleFonts.montserrat(
+              color: color.onSurface,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () {
+                // Show more tasks or settings
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.more_horiz),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -455,114 +674,152 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     // Get the screen width to calculate dynamic padding and font sizes
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const PeerGroupView(), // Replace with your destination screen
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              // Define the slide transition
-              const begin = Offset(1.0, 0.0); // Start from the right side
-              const end = Offset.zero; // End at the normal position
-              const curve =
-                  Curves.easeInOut; // Define the curve of the transition
-
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              var offsetAnimation = animation.drive(tween);
-
-              // Return a SlideTransition that animates the child from right to left
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
+    return Hero(
+      tag: 'peer_group_tag', // Add Hero animation for smoother transitions
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: color.primary.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: -5,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        );
-      },
-      child: Task(
-        title: 'Mental Health Announcement',
-        subtitle: 'Stay informed about upcoming seminars and events.',
-        backgroundColor: color.primary,
-        foregroundColor: Colors.white,
-        textButton: 'Learn More', // Updated button title
-        iconData: Icons.announcement,
-        taskName: 'Seminar Announcement',
-        description:
-            'Discover seminars, workshops, and events related to mental health.',
-        icon: Icons.announcement,
-        color: color.primary,
-        assetName:
-            'assets/images21/meetup.png', // Update with the appropriate image if needed
-        onTap: () {},
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const PeerGroupView(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
 
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth *
-              0.05, // Apply horizontal padding based on screen width
-          vertical: screenWidth *
-              0.02, // Apply vertical padding based on screen width
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                            position: offsetAnimation, child: child);
+                      },
+                    ),
+                  );
+                },
+                splashColor: Colors.white.withOpacity(0.1),
+                child: Task(
+                  title: 'Mental Health Announcement',
+                  subtitle: 'Stay informed about upcoming seminars and events.',
+                  backgroundColor: color.primary,
+                  foregroundColor: Colors.white,
+                  textButton: 'Learn More',
+                  iconData: Icons.announcement,
+                  taskName: 'Seminar Announcement',
+                  description:
+                      'Discover seminars, workshops, and events related to mental health.',
+                  icon: Icons.announcement,
+                  color: color.primary,
+                  assetName: 'assets/images21/meetup.png',
+                  onTap: () {},
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05,
+                    vertical: screenWidth * 0.03,
+                  ),
+                  titleFontSize: screenWidth > 600 ? 22 : 18,
+                  subtitleFontSize: screenWidth > 600 ? 16 : 14,
+                ),
+              ),
+            ),
+          ),
         ),
-        titleFontSize: screenWidth > 600
-            ? 22
-            : 18, // Update title font size for larger screens
-        subtitleFontSize: screenWidth > 600
-            ? 16
-            : 14, // Update subtitle font size for larger screens
       ),
     );
   }
 
   Widget _buildMeditationTask(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final Color meditationColor = Colors.teal.shade600;
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const MeditationView(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              // Define the slide transition
-              const begin = Offset(1.0, 0.0); // Start from the right side
-              const end = Offset.zero; // End at the normal position
-              const curve =
-                  Curves.easeInOut; // Define the curve of the transition
-
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              var offsetAnimation = animation.drive(tween);
-
-              // Return a SlideTransition that animates the child from right to left
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
+    return Hero(
+      tag: 'meditation_tag', // Add Hero animation for smoother transitions
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: meditationColor.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: -5,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        );
-      },
-      child: Task(
-        title: 'Relaxing Session',
-        subtitle: 'Relax and unwind with a guided session.',
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        textButton: 'Start Now',
-        iconData: Icons.self_improvement,
-        taskName: 'Meditation',
-        description: 'A guided meditation session.',
-        icon: Icons.self_improvement,
-        color: Colors.green,
-        assetName: 'assets/images21/meditation.png',
-        onTap: () {},
-        // Adjust the Task widget layout based on screen width
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05, // Apply horizontal padding
-          vertical: screenWidth * 0.02, // Apply vertical padding
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const MeditationView(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                            position: offsetAnimation, child: child);
+                      },
+                    ),
+                  );
+                },
+                splashColor: Colors.white.withOpacity(0.1),
+                child: Task(
+                  title: 'Relaxing Session',
+                  subtitle:
+                      'Relax and unwind with a guided meditation session.',
+                  backgroundColor: meditationColor,
+                  foregroundColor: Colors.white,
+                  textButton: 'Start Now',
+                  iconData: Icons.self_improvement,
+                  taskName: 'Meditation',
+                  description: 'A guided meditation session.',
+                  icon: Icons.self_improvement,
+                  color: meditationColor,
+                  assetName: 'assets/images21/meditation.png',
+                  onTap: () {},
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05,
+                    vertical: screenWidth * 0.03,
+                  ),
+                  titleFontSize: screenWidth > 600 ? 22 : 18,
+                  subtitleFontSize: screenWidth > 600 ? 16 : 14,
+                ),
+              ),
+            ),
+          ),
         ),
-        // You can also modify other parameters like font size or icon size based on the screen size
-        titleFontSize:
-            screenWidth > 600 ? 22 : 18, // Bigger title on larger screens
-        subtitleFontSize:
-            screenWidth > 600 ? 16 : 14, // Adjust subtitle font size
       ),
     );
   }

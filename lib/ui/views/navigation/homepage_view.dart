@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stacked/stacked.dart';
+import 'package:tangullo/ui/views/assesment/container.dart';
 import 'package:tangullo/ui/views/home/home.dart';
 import 'package:tangullo/ui/views/messages/messages_view.dart';
-import 'package:tangullo/ui/views/settings/settings_view.dart';
+
 import '../admin/doctorslist.dart';
 import '../chatbot/g.dart';
 import 'homepage_viewmodel.dart';
@@ -46,7 +47,7 @@ class HomepageView extends StackedView<HomepageViewModel> {
                 viewModel.isLoading, const Home(userName: '')),
             _buildPageWithShimmer(viewModel.isLoading, const DoctorsListPage()),
             _buildPageWithShimmer(viewModel.isLoading, const MessagesView()),
-            _buildPageWithShimmer(viewModel.isLoading, const SettingsView()),
+            _buildPageWithShimmer(viewModel.isLoading, HomeScreen()),
           ],
         ),
       ),
@@ -82,7 +83,7 @@ class HomepageView extends StackedView<HomepageViewModel> {
           Icon(Icons.spa, size: screenWidth * 0.07, color: Colors.white),
           Icon(Icons.people, size: screenWidth * 0.07, color: Colors.white),
           Icon(Icons.chat, size: screenWidth * 0.07, color: Colors.white),
-          Icon(Icons.settings, size: screenWidth * 0.07, color: Colors.white),
+          Icon(Icons.assessment, size: screenWidth * 0.07, color: Colors.white),
         ],
       ),
     );

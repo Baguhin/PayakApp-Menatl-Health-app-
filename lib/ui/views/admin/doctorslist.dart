@@ -250,7 +250,8 @@ class _DoctorsListPageState extends State<DoctorsListPage>
           itemBuilder: (context, index) {
             final doctor = filteredDoctors[index];
             return Hero(
-              tag: 'doctor-${doctor['_id']}',
+              tag:
+                  'doctor-${doctor['_id']}-$index', // Adding index to ensure uniqueness
               child: Material(
                 borderRadius: BorderRadius.circular(20),
                 elevation: 4,

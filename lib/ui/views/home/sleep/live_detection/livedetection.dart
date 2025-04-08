@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
-import 'dart:math' as math;
 import 'dart:async';
-import 'dart:io';
 import 'package:image/image.dart' as img;
 
 class Home extends StatefulWidget {

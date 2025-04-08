@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tangullo/ui/views/home/home.dart'; // Assuming this is your home page
+import 'package:google_fonts/google_fonts.dart';
 
 class Assessment extends StatefulWidget {
   const Assessment({super.key});
@@ -142,14 +143,29 @@ class _AssessmentState extends State<Assessment> {
     double currentPercentage = (currentQuestionIndex / totalQuestions);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB), // Light neutral background
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Mental Health Assessment',
-          style: TextStyle(color: Colors.white),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        backgroundColor: const Color(0xFF4A90E2), // Custom blue color
-        elevation: 0,
+        backgroundColor: const Color(0xFF4A90E2),
+        elevation: 2,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            if (currentQuestionIndex > 0) {
+              setState(() {
+                currentQuestionIndex--;
+              });
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -159,108 +175,199 @@ class _AssessmentState extends State<Assessment> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircularPercentIndicator(
-                    radius: 110.0,
+                    radius: 130.0,
                     lineWidth: 15.0,
                     animation: true,
                     percent: currentPercentage,
-                    center: Text(
-                      "${(currentPercentage * 100).toStringAsFixed(1)}%",
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF4A90E2),
-                      ),
+                    center: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "${currentQuestionIndex + 1}/$totalQuestions",
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF4A90E2),
+                          ),
+                        ),
+                        Text(
+                          "Questions",
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                     circularStrokeCap: CircularStrokeCap.round,
                     progressColor: const Color(0xFF4A90E2),
                     backgroundColor: const Color(0xFFE6E8EB),
                   ),
                   const SizedBox(height: 40),
-                  Text(
-                    questions.expand((q) => q).elementAt(currentQuestionIndex),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF333333),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 5,
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    citations
-                        .expand((c) => c)
-                        .elementAt(currentQuestionIndex), // Display citation
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xFF666666),
+                    child: Column(
+                      children: [
+                        Text(
+                          questions.expand((q) => q).elementAt(currentQuestionIndex),
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF333333),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          citations.expand((c) => c).elementAt(currentQuestionIndex),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: const Color(0xFF666666),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
                   const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(
+                      _buildGradientButton(
+                        text: 'No',
+                        colors: const [Color(0xFFF44336), Color(0xFFE57373)],
                         onPressed: () {
                           setState(() {
-                            answers[currentQuestionIndex] = true; // Yes
+                            answers[currentQuestionIndex] = false;
                             currentQuestionIndex++;
                           });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4CAF50), // Green
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Yes',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
                       ),
-                      ElevatedButton(
+                      _buildGradientButton(
+                        text: 'Yes',
+                        colors: const [Color(0xFF4CAF50), Color(0xFF81C784)],
                         onPressed: () {
                           setState(() {
-                            answers[currentQuestionIndex] = false; // No
+                            answers[currentQuestionIndex] = true;
                             currentQuestionIndex++;
                           });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF44336), // Red
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'No',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 30),
                 ],
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    getResults(),
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF333333),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 30),
-                ],
-              ),
+            : _buildResultsPage(),
+      ),
+    );
+  }
+
+  Widget _buildGradientButton({
+    required String text,
+    required List<Color> colors,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: colors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: colors[0].withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsPage() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 5,
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.assessment_rounded,
+            size: 72,
+            color: Color(0xFF4A90E2),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Assessment Complete',
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF333333),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            getResults(),
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              color: const Color(0xFF666666),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          _buildGradientButton(
+            text: 'Return Home',
+            colors: const [Color(0xFF4A90E2), Color(0xFF64B5F6)],
+            onPressed: navigateToHome,
+          ),
+        ],
       ),
     );
   }

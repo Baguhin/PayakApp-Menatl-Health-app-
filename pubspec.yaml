@@ -182,7 +182,7 @@ flutter:
     - assets/tflite_for_live/model.tflite
     - assets/tflite_for_live/labels.txt
     - assets/videos/animation.json
-    
+    - assets/images21/calm4.jpg
     
 
 

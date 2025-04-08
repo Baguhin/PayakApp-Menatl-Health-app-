@@ -816,8 +816,6 @@ class MessagesView extends StackedView<MessagesViewModel> {
   }
 
   String _formatTimestamp(DateTime timestamp) {
-    if (timestamp == null) return '';
-
     final now = DateTime.now();
     final difference = now.difference(timestamp);
     final today = DateTime(now.year, now.month, now.day);
