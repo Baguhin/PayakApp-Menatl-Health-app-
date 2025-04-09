@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
         ),
         title: Row(
           children: [
-            Icon(Icons.psychology, color: Colors.white, size: 30),
+            const Icon(Icons.psychology, color: Colors.white, size: 30),
             const SizedBox(width: 12),
             Text(
               'PayakApp',

@@ -5,7 +5,7 @@ class HomepageViewModel extends BaseViewModel {
   bool _isLoading = false;
 
   // Track when each tab was last loaded to manage refresh states
-  Map<int, DateTime> _lastLoadedTimes = {};
+  final Map<int, DateTime> _lastLoadedTimes = {};
 
   // Time threshold for determining when to reload data (5 minutes)
   final Duration _refreshThreshold = const Duration(minutes: 5);

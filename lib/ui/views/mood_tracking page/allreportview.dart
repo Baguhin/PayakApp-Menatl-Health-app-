@@ -198,8 +198,9 @@ class _MoodReportViewState extends State<MoodReportView>
                 ),
               ),
               rightTitles:
-                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(
               show: true,
@@ -337,14 +338,14 @@ class _MoodReportViewState extends State<MoodReportView>
                 isCurved: true,
                 barWidth: 3,
                 color: Colors.purple,
-                dotData: FlDotData(show: true),
+                dotData: const FlDotData(show: true),
                 belowBarData: BarAreaData(
                   show: true,
                   color: Colors.purple.withOpacity(0.2),
                 ),
               ),
             ],
-            gridData: FlGridData(
+            gridData: const FlGridData(
               show: true,
               drawVerticalLine: false,
               horizontalInterval: 1,
@@ -387,8 +388,9 @@ class _MoodReportViewState extends State<MoodReportView>
                 ),
               ),
               rightTitles:
-                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(
               show: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'dart:async';
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoId;
