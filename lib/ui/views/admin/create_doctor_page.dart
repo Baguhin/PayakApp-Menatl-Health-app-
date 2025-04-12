@@ -434,11 +434,11 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
                             ),
                             elevation: 3,
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.add_circle_outline_rounded),
-                              const SizedBox(width: 10),
+                              Icon(Icons.add_circle_outline_rounded),
+                              SizedBox(width: 10),
                               Text(
                                 "Create Doctor Profile",
                                 style: TextStyle(
@@ -633,7 +633,7 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final input = customController.text?.trim();
+                final input = customController.text.trim();
                 if (input?.isNotEmpty ?? false) {
                   setState(() {
                     selectedSpecialization = "Other";
@@ -775,9 +775,9 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
             },
           ),
         ),
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text("1.0", style: TextStyle(color: Colors.grey)),
             Text("5.0", style: TextStyle(color: Colors.grey)),
           ],

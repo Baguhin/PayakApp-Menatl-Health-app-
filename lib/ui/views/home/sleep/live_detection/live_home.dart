@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tangullo/ui/views/home/sleep/live_detection/livedetection.dart';
 import 'package:animations/animations.dart'; // Import for smooth transition animations
+
+// Import the modified home page
+import 'package:tangullo/ui/views/home/sleep/live_detection/livedetection.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -44,7 +46,7 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Live Emotion Detection',
+            'Emotion Detection',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           ),
           backgroundColor: Colors.deepPurpleAccent,
@@ -60,7 +62,7 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 30),
-                // ✅ Enhanced Lottie animation
+                // Lottie animation
                 Lottie.asset(
                   'assets/videos/animation.json',
                   width: 250,
@@ -70,7 +72,7 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  'Real-Time Emotion Detection',
+                  'AI-Powered Emotion Detection',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -79,12 +81,12 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Analyze facial expressions live using AI-powered emotion detection.',
+                  'Upload a photo or take a new picture to analyze facial expressions using AI.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 40),
-                // ✅ Improved button with smooth transition animation
+                // Improved button with smooth transition animation
                 OpenContainer(
                   transitionType: ContainerTransitionType.fadeThrough,
                   transitionDuration: const Duration(milliseconds: 600),
@@ -102,10 +104,11 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
                           EdgeInsets.symmetric(vertical: 25, horizontal: 50),
                       child: Column(
                         children: [
-                          Icon(Icons.videocam, color: Colors.white, size: 60),
+                          Icon(Icons.add_photo_alternate,
+                              color: Colors.white, size: 60),
                           SizedBox(height: 12),
                           Text(
-                            'Start Live Detection',
+                            'Get Started',
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
@@ -118,7 +121,7 @@ class _LandingState extends State<Landing> with SingleTickerProviderStateMixin {
                 ),
                 const SizedBox(height: 60),
                 const Text(
-                  'Powered by AI & Deep Learning',
+                  'Powered by AI & Deep CNN Algorithm',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
                 const SizedBox(height: 10),

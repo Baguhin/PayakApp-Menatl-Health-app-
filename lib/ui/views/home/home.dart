@@ -233,7 +233,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             _buildDrawerItem(
               context,
               Icons.face_3_rounded,
-              'Live Face Detection',
+              'Face Emotion Detection',
               const Landing(),
               Colors.purple,
             ),
