@@ -1,8 +1,11 @@
 import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tangullo/ui/views/home/helpline.dart';
 import 'package:tangullo/ui/views/home/peer.dart';
@@ -16,11 +19,13 @@ import 'package:tangullo/ui/views/mood_tracking%20page/gospel_screen.dart';
 import 'package:tangullo/ui/views/settings/settings_view.dart';
 import 'package:tangullo/ui/views/track_workout.dart';
 import 'package:tangullo/widgets/task.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../mood_tracking page/allreportview.dart';
 
 import '../new_homepage/screens/patient_dashboard/my_diary/my_diary_screen.dart';
 import 'userfeedback.dart';
+
+// Define API base URL - update this with your actual backend API URL
+const String apiBaseUrl = 'https://your-api-url.com/api';
 
 class Home extends StatefulWidget {
   final String userName;
@@ -49,8 +54,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _showElevation = false;
 
+  // Store the user ID
+  String? userId;
+
   // Store the quote once when the state is initialized
   late String _currentQuote;
+
+  get accessToken => null;
 
   @override
   void initState() {
@@ -71,6 +81,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _showElevation = shouldShowElevation;
         });
       }
+    });
+
+    // Get the user ID from shared preferences
+    _loadUserId();
+  }
+
+  // Load user ID from SharedPreferences
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userId');
     });
   }
 
@@ -569,10 +590,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 
-  // These methods are kept for compatibility but not used anymore
-  void _showMoodPreview(BuildContext context, String mood) {}
-  void _hideMoodPreview(BuildContext context) {}
-
   Widget _buildMoodReportsButton(BuildContext context, ColorScheme color) {
     return Container(
       width: double.infinity,
@@ -603,16 +620,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           splashColor: Colors.white.withOpacity(0.1),
           highlightColor: Colors.white.withOpacity(0.05),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const MoodReportView(
-                  mood: '',
-                  userId: '',
-                  selectedMood: '',
-                ),
-              ),
-            );
+            _navigateToMoodReports(context);
           },
           child: Center(
             child: Row(
@@ -636,6 +644,82 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void _getCurrentUser() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      setState(() {
+        userId = currentUser.uid;
+      });
+    }
+  }
+
+  void _navigateToMoodReports(BuildContext context) async {
+    // Get the current user
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    // Set userId from Firebase Auth instead of relying on state
+    final String? currentUserId = currentUser?.uid;
+
+    if (currentUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in to view your mood reports'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+
+      final response = await http.get(
+        Uri.parse(
+            'https://legit-backend-iqvk.onrender.com/api/moods/$currentUserId'),
+        headers: {
+          'Content-Type': 'application/json',
+          // You need to get your access token properly
+          'Authorization': 'Bearer ${currentUser?.getIdToken() ?? ""}',
+        },
+      );
+
+      Navigator.pop(context); // Close loading dialog
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to fetch mood reports: ${response.body}');
+      }
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> moods = responseData['data'];
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MoodReportView(
+            mood: '',
+            userId: currentUserId,
+            selectedMood: '',
+            moodReports: moods,
+          ),
+        ),
+      );
+    } catch (error) {
+      print('Error fetching mood reports: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching mood reports: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildTodayTaskTitle(ColorScheme color) {
@@ -723,7 +807,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   subtitle: 'Stay informed about upcoming seminars and events.',
                   backgroundColor: color.primary,
                   foregroundColor: Colors.white,
-                  textButton: 'Learn More',
                   iconData: Icons.announcement,
                   taskName: 'Seminar Announcement',
                   description:
@@ -738,6 +821,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ),
                   titleFontSize: screenWidth > 600 ? 22 : 18,
                   subtitleFontSize: screenWidth > 600 ? 16 : 14,
+                  textButton: '',
                 ),
               ),
             ),
@@ -801,7 +885,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       'Relax and unwind with a guided meditation session.',
                   backgroundColor: meditationColor,
                   foregroundColor: Colors.white,
-                  textButton: 'Start Now',
                   iconData: Icons.self_improvement,
                   taskName: 'Meditation',
                   description: 'A guided meditation session.',
@@ -815,6 +898,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ),
                   titleFontSize: screenWidth > 600 ? 22 : 18,
                   subtitleFontSize: screenWidth > 600 ? 16 : 14,
+                  textButton: '',
                 ),
               ),
             ),
@@ -825,37 +909,87 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   void _handleMoodSelection(BuildContext context, String mood) async {
-    // Save mood to Firebase
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final moodRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('moods');
+    try {
+      // Get current Firebase user ID
+      final currentUser = FirebaseAuth.instance.currentUser;
 
-    await moodRef.add({
-      'mood': mood,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You need to be logged in to save mood data'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-    // Show a SnackBar indicating the mood has been saved
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Mood "$mood" is saved!'),
-        duration: const Duration(seconds: 2), // Duration for the SnackBar
-      ),
-    );
+      final userId = currentUser.uid; // Firebase UID
 
-    // Wait for the SnackBar to finish before navigating
-    await Future.delayed(const Duration(seconds: 2));
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
 
-    // Navigate to GospelScreen with the selected moodType
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GospelScreen(
-          moodType: mood, // Pass the selected mood here
+      // Call API to save mood data
+      var accessToken;
+      final response = await http.post(
+        Uri.parse('https://legit-backend-iqvk.onrender.com/api/moods/save'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer $accessToken', // 👈 Include Supabase token here
+        },
+        body: json.encode({
+          'userId': userId,
+          'mood': mood,
+        }),
+      );
+
+      // Close loading indicator
+      Navigator.pop(context);
+
+      if (response.statusCode != 201) {
+        throw Exception('Failed to save mood: ${response.body}');
+      }
+
+      // Parse response
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      // Show a SnackBar indicating the mood has been saved
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(responseData['message'] ?? 'Mood "$mood" is saved!'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.green,
         ),
-      ),
-    );
+      );
+
+      // Wait for the SnackBar to finish before navigating
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Navigate to GospelScreen with the selected moodType
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GospelScreen(
+            moodType: mood, // Pass the selected mood here
+          ),
+        ),
+      );
+    } catch (error) {
+      print('Error saving mood: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving mood: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

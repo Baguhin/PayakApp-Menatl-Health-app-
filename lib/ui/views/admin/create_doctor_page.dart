@@ -34,6 +34,7 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
   final dio.Dio _dio = dio.Dio();
   bool isLoading = false;
 
+  // Modified URL for your server
   final String apiUrl = 'https://legit-backend-iqvk.onrender.com/doctors';
   bool isFormValid = false;
 
@@ -133,6 +134,7 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
     });
 
     try {
+      // Create FormData for multipart form submission (compatible with Supabase backend)
       dio.FormData formData = dio.FormData.fromMap({
         'name': nameController.text.trim(),
         'phone': phoneController.text.trim(),
@@ -143,11 +145,13 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
         'rating': ratingController.text.trim(),
       });
 
+      // Add image to form data if available
       if (_image != null) {
         String fileName = _image!.path.split('/').last;
         String mimeType = lookupMimeType(_image!.path) ?? 'image/jpeg';
         final mimeTypeData = mimeType.split('/');
 
+        // Image field name 'image' matches what your backend expects
         formData.files.add(MapEntry(
           "image",
           await dio.MultipartFile.fromFile(
@@ -175,6 +179,10 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
       });
 
       if (response.statusCode == 201) {
+        // Handle the Supabase response which includes imageUrl
+        final imageUrl =
+            response.data['imageUrl']; // Get the Supabase public URL
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.snackbar(
             "Success",
@@ -190,10 +198,15 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
 
         _resetForm();
       } else {
+        final errorMessage =
+            response.data is Map && response.data.containsKey('error')
+                ? response.data['error']
+                : 'Unknown error';
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.snackbar(
             "Error",
-            "Failed: ${response.statusCode} - ${response.data['error'] ?? 'Unknown error'}",
+            "Failed: ${response.statusCode} - $errorMessage",
             backgroundColor: Colors.red.shade600,
             colorText: Colors.white,
             snackPosition: SnackPosition.TOP,
@@ -634,10 +647,10 @@ class _CreateDoctorPageState extends State<CreateDoctorPage> {
             ElevatedButton(
               onPressed: () {
                 final input = customController.text.trim();
-                if (input?.isNotEmpty ?? false) {
+                if (input.isNotEmpty) {
                   setState(() {
                     selectedSpecialization = "Other";
-                    specializationController.text = input!;
+                    specializationController.text = input;
                     _validateForm();
                   });
                   Navigator.of(context).pop();

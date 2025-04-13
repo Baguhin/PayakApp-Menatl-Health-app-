@@ -81,9 +81,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       developer.log('Model input shape: $inputShape');
     } catch (e) {
       developer.log('Error loading model: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load emotion detection model: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load emotion detection model: $e')),
+        );
+      }
     }
   }
 
@@ -117,9 +119,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       setState(() {
         isProcessing = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing image: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error processing image: $e')),
+        );
+      }
     }
   }
 
@@ -205,9 +209,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       });
     } catch (e) {
       developer.log('Error processing image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error analyzing emotion: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error analyzing emotion: $e')),
+        );
+      }
     }
   }
 
@@ -275,49 +281,49 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       case 'Angry':
         return {
           'color': Colors.red.shade700,
-          'gradient': [Colors.red.shade600, Colors.red.shade900],
+          'gradient': [Colors.red.shade500, Colors.red.shade900],
           'icon': Icons.mood_bad,
           'title': "Here's a joke to cheer you up!"
         };
       case 'Fear':
         return {
           'color': Colors.purple.shade700,
-          'gradient': [Colors.purple.shade600, Colors.purple.shade900],
+          'gradient': [Colors.purple.shade500, Colors.purple.shade900],
           'icon': Icons.sentiment_very_dissatisfied,
           'title': "Some reassuring thoughts:"
         };
       case 'Happy':
         return {
           'color': Colors.amber.shade700,
-          'gradient': [Colors.amber.shade600, Colors.amber.shade800],
+          'gradient': [Colors.amber.shade500, Colors.amber.shade800],
           'icon': Icons.sentiment_very_satisfied,
           'title': "Keep the good vibes going!"
         };
       case 'Neutral':
         return {
           'color': Colors.blue.shade700,
-          'gradient': [Colors.blue.shade600, Colors.blue.shade900],
+          'gradient': [Colors.blue.shade500, Colors.blue.shade900],
           'icon': Icons.sentiment_neutral,
           'title': "Interesting fact for you:"
         };
       case 'Sad':
         return {
           'color': Colors.indigo.shade700,
-          'gradient': [Colors.indigo.shade600, Colors.indigo.shade900],
+          'gradient': [Colors.indigo.shade500, Colors.indigo.shade900],
           'icon': Icons.sentiment_dissatisfied,
           'title': "Something to brighten your day:"
         };
       case 'Surprised':
         return {
           'color': Colors.orange.shade700,
-          'gradient': [Colors.orange.shade600, Colors.orange.shade900],
+          'gradient': [Colors.orange.shade500, Colors.orange.shade900],
           'icon': Icons.sentiment_very_satisfied,
           'title': "More surprising facts:"
         };
       default:
         return {
           'color': Colors.grey.shade700,
-          'gradient': [Colors.grey.shade600, Colors.grey.shade900],
+          'gradient': [Colors.grey.shade500, Colors.grey.shade900],
           'icon': Icons.face,
           'title': "Hmm, interesting..."
         };
@@ -326,110 +332,98 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   Widget _buildEmotionCard() {
     final theme = _getEmotionTheme();
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Card(
-      elevation: 10,
+      elevation: 8,
       shadowColor: theme['color'].withOpacity(0.5),
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       child: Container(
-        constraints: BoxConstraints(
-          maxHeight:
-              screenHeight * 0.75, // 👈 Limits card to 75% of screen height
-        ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: theme['gradient'],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(20),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            // 👈 add this scroll view around Column
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // header row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: [
-                          const BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 5,
-                            spreadRadius: 1,
-                          ),
-                        ],
+        child: Column(
+          children: [
+            // Header section with emotion info
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Emotion icon and label
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white24,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          theme['icon'],
+                          size: 28,
+                          color: Colors.white,
+                        ),
                       ),
-                      child: Icon(
-                        theme['icon'],
-                        size: 32,
-                        color: Colors.white,
+                      const SizedBox(width: 12),
+                      Text(
+                        emotionResult ?? 'No emotion',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
+                    ],
+                  ),
+
+                  // Confidence badge
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white38, width: 1),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      emotionResult ?? 'No emotion',
+                    child: Text(
+                      '${((confidence ?? 0) * 100).toStringAsFixed(1)}%',
                       style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(color: Colors.white24, height: 1),
+
+            // Content section
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
-                const SizedBox(height: 12),
-
-                // confidence indicator
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: Text(
-                    'Confidence: ${((confidence ?? 0) * 100).toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-
-                const Divider(color: Colors.white38, thickness: 1, height: 24),
-
-                // card title
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    theme['title'],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-
-                // Content section
-                Container(
-                  constraints: BoxConstraints(
-                    maxHeight:
-                        screenHeight * 0.4, // 👈 40% of screen for content area
-                  ),
+                child: Container(
+                  color: Colors.white.withOpacity(0.1),
+                  width: double.infinity,
                   child: isLoadingContent
                       ? const Center(
                           child: Column(
@@ -450,66 +444,142 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         )
                       : FadeTransition(
                           opacity: _animation,
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12.withOpacity(0.05),
-                                  blurRadius: 5,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      geminiContent ?? "Loading content...",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        height: 1.5,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    if (apiError) ...[
-                                      const SizedBox(height: 16),
-                                      ElevatedButton.icon(
-                                        onPressed: retryFetchContent,
-                                        icon: const Icon(Icons.refresh),
-                                        label: const Text("Retry"),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.white24,
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Title
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                                child: Text(
+                                  theme['title'],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
+
+                              // Content area with scrolling
+                              Expanded(
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.white24),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    physics: const BouncingScrollPhysics(),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          geminiContent ?? "Loading content...",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            height: 1.5,
+                                            letterSpacing: 0.2,
+                                          ),
+                                        ),
+                                        if (apiError) ...[
+                                          const SizedBox(height: 20),
+                                          Center(
+                                            child: ElevatedButton.icon(
+                                              onPressed: retryFetchContent,
+                                              icon: const Icon(Icons.refresh),
+                                              label: const Text("Retry"),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.white24,
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 12,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                 ),
-              ],
+              ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            blurRadius: 5,
+            spreadRadius: 1,
           ),
+        ],
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.mood,
+                size: 48,
+                color: Colors.deepPurple.shade300,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                'Take a photo to see\nwhat we say about your mood!',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -531,83 +601,85 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.deepPurple.shade800,
+              Colors.deepPurple.shade700,
               Colors.deepPurple.shade900,
               Colors.indigo.shade900
             ],
           ),
         ),
+        // Make the entire page scrollable instead of fixed height divisions
         child: SafeArea(
-          child: Column(
-            children: [
-              // Custom App Bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            spreadRadius: 1,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                // App Bar
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.psychology,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Emotion Detector',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Discover how you feel',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.psychology,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Emotion Detector',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Discover how you feel',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              // Image Container
-              Expanded(
-                flex: 3,
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(20),
+                // Image Container (with a fixed aspect ratio instead of Expanded)
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  height: MediaQuery.of(context).size.width *
+                      0.7, // Responsive height based on width
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 15,
-                        spreadRadius: 3,
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 12,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
                     child: selectedImage == null
                         ? Center(
                             child: Column(
@@ -618,33 +690,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     color: Colors.deepPurple.shade50,
                                     shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
-                                        blurRadius: 10,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
                                   ),
                                   child: Icon(
                                     Icons.add_photo_alternate,
-                                    size: 80,
+                                    size: 64,
                                     color: Colors.deepPurple.shade300,
                                   ),
                                 ),
-                                const SizedBox(height: 24),
+                                const SizedBox(height: 16),
                                 Text(
-                                  'Take or select a photo\nto detect your emotion',
+                                  'Take or select a photo',
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey[600],
-                                    height: 1.5,
+                                    fontSize: 16,
+                                    color: Colors.grey[700],
                                     fontWeight: FontWeight.w500,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -657,9 +719,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                         Border.all(color: Colors.grey[200]!),
                                   ),
                                   child: Text(
-                                    'We\'ll analyze your expression!',
+                                    'We\'ll analyze your expression',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 13,
                                       color: Colors.grey[500],
                                     ),
                                   ),
@@ -677,29 +739,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               if (isProcessing)
                                 Container(
                                   color: Colors.black54,
-                                  child: Center(
+                                  child: const Center(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const CircularProgressIndicator(
+                                        CircularProgressIndicator(
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
                                                   Colors.white),
                                           strokeWidth: 3,
-                                          backgroundColor: Colors.black26,
                                         ),
-                                        const SizedBox(height: 20),
+                                        SizedBox(height: 20),
                                         Text(
                                           'Analyzing your emotion...',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 18,
+                                            fontSize: 16,
                                             fontWeight: FontWeight.w500,
                                             shadows: [
                                               Shadow(
                                                 blurRadius: 10,
-                                                color: Colors.black
-                                                    .withOpacity(0.5),
+                                                color: Colors.black54,
                                               ),
                                             ],
                                           ),
@@ -712,133 +772,102 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ),
                   ),
                 ),
-              ),
 
-              // Results Panel
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                  width: double.infinity,
+                // Results Section - White background area
+                Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
                     ),
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 60,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                      // Drag handle
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                      Expanded(
-                        child: selectedImage == null
-                            ? Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(16),
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.1),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.mood,
-                                        size: 50,
-                                        color: Colors.deepPurple.shade200,
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Text(
-                                        'Take a photo to see\nwhat we say about your emotion!',
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16,
-                                          height: 1.5,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                child: _buildEmotionCard(),
-                              ),
+
+                      // Results card - with fixed height instead of Expanded
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height *
+                              0.4, // Fixed reasonable height
+                          child: selectedImage == null
+                              ? _buildPlaceholder()
+                              : _buildEmotionCard(),
+                        ),
                       ),
+
                       // Action buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade100,
-                                foregroundColor: Colors.deepPurple.shade800,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple.shade100,
+                                  foregroundColor: Colors.deepPurple.shade800,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 2,
                                 ),
-                                elevation: 4,
-                              ),
-                              onPressed: () => _pickImage(ImageSource.gallery),
-                              icon: const Icon(Icons.photo_library),
-                              label: const Text(
-                                'Gallery',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
+                                onPressed: () =>
+                                    _pickImage(ImageSource.gallery),
+                                icon: const Icon(Icons.photo_library, size: 22),
+                                label: const Text(
+                                  'Gallery',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade700,
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple.shade600,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 2,
                                 ),
-                                elevation: 4,
-                              ),
-                              onPressed: () => _pickImage(ImageSource.camera),
-                              icon: const Icon(Icons.camera_alt),
-                              label: const Text(
-                                'Camera',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
+                                onPressed: () => _pickImage(ImageSource.camera),
+                                icon: const Icon(Icons.camera_alt, size: 22),
+                                label: const Text(
+                                  'Camera',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

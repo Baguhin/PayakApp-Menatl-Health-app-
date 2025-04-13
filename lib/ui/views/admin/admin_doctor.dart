@@ -161,6 +161,16 @@ class _AdminDoctorPageState extends State<AdminDoctorPage> {
     );
   }
 
+  String getImageUrl(Map<String, dynamic> doctor) {
+    // Check if the backend provided the full URL
+    if (doctor['imageUrl'] != null) {
+      return doctor['imageUrl'];
+    }
+
+    // Fallback to a default image if no image URL is provided
+    return 'https://legit-backend-iqvk.onrender.com/uploads/default.jpg';
+  }
+
   Widget _buildListItem(Map<String, dynamic> doctor) {
     return Slidable(
       key: ValueKey(doctor['id']),
@@ -198,10 +208,12 @@ class _AdminDoctorPageState extends State<AdminDoctorPage> {
                 backgroundColor: Colors.grey[200],
                 child: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl:
-                        'http://yourserver.com/uploads/${doctor['image']}',
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
+                    imageUrl: getImageUrl(doctor),
+                    placeholder: (context, url) => const SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                     errorWidget: (context, url, error) => Icon(
                       Icons.person,
                       size: 40,
@@ -256,7 +268,7 @@ class _AdminDoctorPageState extends State<AdminDoctorPage> {
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
               child: CachedNetworkImage(
-                imageUrl: 'http://yourserver.com/uploads/${doctor['image']}',
+                imageUrl: getImageUrl(doctor),
                 placeholder: (context, url) => const SizedBox(
                   height: 120,
                   child: Center(child: CircularProgressIndicator()),

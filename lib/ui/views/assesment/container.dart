@@ -180,7 +180,7 @@ class HomeScreen extends StatelessWidget {
               const Icon(Icons.favorite, color: Colors.redAccent),
               const SizedBox(width: 10),
               Text(
-                'Mental Health Assessment',
+                ' Assessment',
                 style: GoogleFonts.montserrat(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

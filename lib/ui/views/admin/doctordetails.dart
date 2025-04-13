@@ -46,26 +46,37 @@ class DoctorCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            name,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+          // Auto-sizing text approach for the name
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  height: 1.2,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.purple.shade50,
+              color: Colors
+                  .indigo.shade50, // Changed to blue/indigo for mental health
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               specialization,
               style: TextStyle(
-                color: Colors.purple.shade700,
+                color: Colors.indigo
+                    .shade700, // Changed to blue/indigo for mental health
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -268,18 +279,23 @@ class _DoctorContactPageState extends State<DoctorContactPage>
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  widget.doctor['name'],
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(1, 1),
-                        blurRadius: 3,
-                        color: Color.fromRGBO(0, 0, 0, 0.5),
-                      ),
-                    ],
+                title: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    widget.doctor['name'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 3,
+                          color: Color.fromRGBO(0, 0, 0, 0.5),
+                        ),
+                      ],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 background: Stack(
@@ -322,8 +338,11 @@ class _DoctorContactPageState extends State<DoctorContactPage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildInfoColumn(Icons.medical_services,
-                      widget.doctor['specialization'], 'Specialist'),
+                  _buildInfoColumn(
+                      Icons
+                          .psychology, // Changed to psychology icon for mental health
+                      widget.doctor['specialization'],
+                      'Specialist'),
                   _buildInfoColumn(
                       Icons.star, '${widget.doctor['rating']}', 'Rating'),
                   _buildInfoColumn(Icons.people,
@@ -444,7 +463,7 @@ class _DoctorContactPageState extends State<DoctorContactPage>
             ),
             child: Text(
               widget.doctor['bio'] ??
-                  "Dr. ${widget.doctor['name']} is a highly qualified ${widget.doctor['specialization']} with extensive experience in patient care. They are known for their excellent bedside manner and comprehensive approach to treatment.",
+                  "Dr. ${widget.doctor['name']} is a highly qualified ${widget.doctor['specialization']} with extensive experience in mental health care. They are known for their compassionate approach and evidence-based therapeutic methods.",
               style: const TextStyle(
                 fontSize: 16,
                 height: 1.5,
@@ -468,8 +487,10 @@ class _DoctorContactPageState extends State<DoctorContactPage>
               for (var specialty in widget.doctor['specialties'] ??
                   [
                     widget.doctor['specialization'],
-                    "General Consultation",
-                    "Preventive Care"
+                    "Anxiety Treatment",
+                    "Depression Therapy",
+                    "PTSD",
+                    "CBT"
                   ])
                 Chip(
                   label: Text(specialty),
@@ -503,13 +524,13 @@ class _DoctorContactPageState extends State<DoctorContactPage>
             child: Column(
               children: [
                 _buildExperienceItem(
-                  "Medical University",
-                  "MD in ${widget.doctor['specialization']}",
+                  "Psychology University",
+                  "PhD in ${widget.doctor['specialization']}",
                   "2010 - 2014",
                 ),
                 const Divider(),
                 _buildExperienceItem(
-                  "City Hospital",
+                  "Mental Health Clinic",
                   "Senior ${widget.doctor['specialization']}",
                   "2014 - Present",
                 ),
@@ -662,7 +683,7 @@ class _DoctorContactPageState extends State<DoctorContactPage>
                     ),
                     child: const Icon(Icons.access_time, color: Colors.purple),
                   ),
-                  title: const Text("Working Hours"),
+                  title: const Text("Consulting Hours"),
                   subtitle: const Text(
                       "Mon-Fri: 9:00 AM - 5:00 PM\nSat: 10:00 AM - 2:00 PM"),
                 ),
@@ -683,7 +704,7 @@ class _DoctorContactPageState extends State<DoctorContactPage>
             children: [
               _buildSocialButton(Icons.language, Colors.blue),
               _buildSocialButton(Icons.facebook, Colors.indigo),
-              _buildSocialButton(Icons.medical_services, Colors.red),
+              _buildSocialButton(Icons.psychology, Colors.teal),
               _buildSocialButton(Icons.chat, Colors.green),
             ],
           ),
@@ -716,7 +737,7 @@ class _DoctorContactPageState extends State<DoctorContactPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Book Appointment",
+            "Book Therapy Session",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -822,9 +843,9 @@ class _DoctorContactPageState extends State<DoctorContactPage>
 
                 const SizedBox(height: 20),
 
-                // Appointment Type
+                // Session Type
                 const Text(
-                  "Appointment Type",
+                  "Session Type",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -870,7 +891,7 @@ class _DoctorContactPageState extends State<DoctorContactPage>
                       elevation: 2,
                     ),
                     child: const Text(
-                      "Book Appointment",
+                      "Book Session",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

@@ -15,7 +15,8 @@ class DoctorsListPage extends StatefulWidget {
 class _DoctorsListPageState extends State<DoctorsListPage>
     with SingleTickerProviderStateMixin {
   final String apiUrl = 'https://legit-backend-iqvk.onrender.com/doctors';
-  final String imageUrl = 'https://legit-backend-iqvk.onrender.com/uploads/';
+  final String fallbackImageUrl =
+      'https://legit-backend-iqvk.onrender.com/uploads/';
 
   List<dynamic> doctors = [];
   List<dynamic> filteredDoctors = [];
@@ -70,6 +71,11 @@ class _DoctorsListPageState extends State<DoctorsListPage>
           isLoading = false;
         });
         _animationController.forward();
+
+        // Debug: Log the first doctor to see image structure
+        if (doctors.isNotEmpty) {
+          print("First doctor data: ${doctors[0]}");
+        }
       } else {
         throw Exception("Failed to load doctors");
       }
@@ -105,6 +111,28 @@ class _DoctorsListPageState extends State<DoctorsListPage>
                   .contains(query.toLowerCase()))
           .toList();
     });
+  }
+
+  // Helper method to get the correct image URL
+  String getDoctorImageUrl(dynamic doctor) {
+    // First check if backend provided a full imageUrl
+    if (doctor['imageUrl'] != null &&
+        doctor['imageUrl'].toString().isNotEmpty) {
+      return doctor['imageUrl'];
+    }
+
+    // Fallback to constructing URL from image path
+    if (doctor['image'] != null && doctor['image'].toString().isNotEmpty) {
+      // Check if it's already a full URL
+      if (doctor['image'].toString().startsWith('http')) {
+        return doctor['image'];
+      }
+      // Otherwise construct from base path
+      return '$fallbackImageUrl${doctor['image']}';
+    }
+
+    // Default image as last resort
+    return '${fallbackImageUrl}default.jpg';
   }
 
   @override
@@ -251,7 +279,7 @@ class _DoctorsListPageState extends State<DoctorsListPage>
             final doctor = filteredDoctors[index];
             return Hero(
               tag:
-                  'doctor-${doctor['_id']}-$index', // Adding index to ensure uniqueness
+                  'doctor-${doctor['id'] ?? doctor['_id']}-$index', // Adding index to ensure uniqueness
               child: Material(
                 borderRadius: BorderRadius.circular(20),
                 elevation: 4,
@@ -264,7 +292,7 @@ class _DoctorsListPageState extends State<DoctorsListPage>
                       MaterialPageRoute(
                         builder: (context) => DoctorContactPage(
                           doctor: doctor,
-                          imageUrl: '$imageUrl${doctor['image']}',
+                          imageUrl: getDoctorImageUrl(doctor),
                           primaryColor: primaryColor,
                           accentColor: accentColor,
                         ),
@@ -295,9 +323,11 @@ class _DoctorsListPageState extends State<DoctorsListPage>
                             radius: 45,
                             backgroundColor: Colors.grey[100],
                             backgroundImage: NetworkImage(
-                              '$imageUrl${doctor['image']}',
+                              getDoctorImageUrl(doctor),
                             ),
-                            onBackgroundImageError: (exception, stackTrace) {},
+                            onBackgroundImageError: (exception, stackTrace) {
+                              print("❌ Error loading image: $exception");
+                            },
                             child:
                                 doctor['image'] == null || doctor['image'] == ''
                                     ? Icon(Icons.person,
@@ -353,7 +383,7 @@ class _DoctorsListPageState extends State<DoctorsListPage>
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                "${doctor['reviews'] ?? '0'} Reviews",
+                                "${doctor['rating']?.toString() ?? '0'} Rating",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,

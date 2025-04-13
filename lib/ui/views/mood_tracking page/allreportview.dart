@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MoodReportView extends StatefulWidget {
   const MoodReportView({
@@ -10,6 +11,7 @@ class MoodReportView extends StatefulWidget {
     this.selectedMood,
     this.userId,
     required String mood,
+    required List moodReports,
   });
 
   final String? selectedMood;
@@ -21,8 +23,8 @@ class MoodReportView extends StatefulWidget {
 
 class _MoodReportViewState extends State<MoodReportView>
     with SingleTickerProviderStateMixin {
-  final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late String userId;
+  final String _baseUrl = 'https://legit-backend-iqvk.onrender.com/api';
 
   // Report type selection
   String _selectedReportType = 'Daily';
@@ -59,6 +61,7 @@ class _MoodReportViewState extends State<MoodReportView>
   };
 
   bool _isLoading = true;
+  List<dynamic> _moodData = [];
 
   @override
   void initState() {
@@ -67,7 +70,7 @@ class _MoodReportViewState extends State<MoodReportView>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _fetchMoodData();
+    _getUserId().then((_) => _fetchMoodData());
   }
 
   @override
@@ -76,60 +79,91 @@ class _MoodReportViewState extends State<MoodReportView>
     super.dispose();
   }
 
-  void _fetchMoodData() async {
+  // Get user ID from shared preferences or other storage
+  Future<void> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = widget.userId ?? prefs.getString('userId') ?? '';
+    });
+  }
+
+  Future<void> _fetchMoodData() async {
+    if (userId.isEmpty) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final moodDocs = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('moods')
-          .orderBy('timestamp', descending: true)
-          .get();
+      final response = await http.get(
+        Uri.parse('$_baseUrl/moods/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
 
-      // Reset counts
-      moodCounts = {for (var mood in moods) mood: 0};
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
 
-      final now = DateTime.now();
-      DateTime startDate;
-
-      // Set time range based on report type
-      if (_selectedReportType == 'Daily') {
-        startDate = DateTime(now.year, now.month, now.day);
-      } else if (_selectedReportType == 'Weekly') {
-        // Start from the beginning of the week (Monday)
-        startDate = now.subtract(Duration(days: now.weekday - 1));
-        startDate = DateTime(startDate.year, startDate.month, startDate.day);
-      } else {
-        // Monthly
-        startDate = DateTime(now.year, now.month, 1);
-      }
-
-      for (var doc in moodDocs.docs) {
-        Timestamp ts = doc['timestamp'];
-        DateTime date = ts.toDate();
-        String mood = doc['mood'];
-
-        if (moods.contains(mood) &&
-            date.isAfter(startDate.subtract(const Duration(milliseconds: 1)))) {
-          moodCounts[mood] = (moodCounts[mood] ?? 0) + 1;
+        if (responseData['success'] == true && responseData['data'] != null) {
+          setState(() {
+            _moodData = responseData['data'];
+          });
+          _processMoodData();
+        } else {
+          throw Exception('Failed to load mood data: ${responseData['error']}');
         }
+      } else {
+        throw Exception('Failed to load mood data: ${response.statusCode}');
       }
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Start animation after data is loaded
-      _animationController.forward(from: 0.0);
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
       print('Error fetching mood data: $e');
     }
+  }
+
+  void _processMoodData() {
+    // Reset counts
+    moodCounts = {for (var mood in moods) mood: 0};
+
+    final now = DateTime.now();
+    DateTime startDate;
+
+    // Set time range based on report type
+    if (_selectedReportType == 'Daily') {
+      startDate = DateTime(now.year, now.month, now.day);
+    } else if (_selectedReportType == 'Weekly') {
+      // Start from the beginning of the week (Monday)
+      startDate = now.subtract(Duration(days: now.weekday - 1));
+      startDate = DateTime(startDate.year, startDate.month, startDate.day);
+    } else {
+      // Monthly
+      startDate = DateTime(now.year, now.month, 1);
+    }
+
+    for (var moodEntry in _moodData) {
+      DateTime date = DateTime.parse(moodEntry['created_at']);
+      String mood = moodEntry['mood_type'];
+
+      if (moods.contains(mood) &&
+          date.isAfter(startDate.subtract(const Duration(milliseconds: 1)))) {
+        moodCounts[mood] = (moodCounts[mood] ?? 0) + 1;
+      }
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    // Start animation after data is loaded
+    _animationController.forward(from: 0.0);
   }
 
   // Helper method to get report title
@@ -321,9 +355,6 @@ class _MoodReportViewState extends State<MoodReportView>
 
   // Line chart for trend analysis
   Widget _buildLineChart() {
-    // For line chart, we'd need historical data by date
-    // This is a simplified version that shows the current data
-
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -397,7 +428,6 @@ class _MoodReportViewState extends State<MoodReportView>
               border: Border.all(color: Colors.grey.shade300, width: 1),
             ),
           ),
-          // For some versions
         );
       },
     );
@@ -527,7 +557,7 @@ class _MoodReportViewState extends State<MoodReportView>
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
                 onRefresh: () async {
-                  _fetchMoodData();
+                  await _fetchMoodData();
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),

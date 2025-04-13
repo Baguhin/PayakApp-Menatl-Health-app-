@@ -130,7 +130,7 @@ class MyApp extends StatelessWidget {
         '/manageMentalHealthAnnouncements': (context) =>
             const ManageMentalHealthAnnouncementsView(),
         '/mentalHealthSeminarAnnouncements': (context) =>
-            const CreateSeminarPage(),
+            const CreateMentalHealthSeminarPage(),
         '/manageReports': (context) => const managereportPage(),
         '/messages': (context) => const MessagesView(),
         // Route for messaging view

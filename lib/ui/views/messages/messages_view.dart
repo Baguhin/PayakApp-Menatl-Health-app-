@@ -281,35 +281,6 @@ class MessagesView extends StackedView<MessagesViewModel> {
     String typingUsername = "Sarah";
 
     if (!someoneIsTyping) return const SizedBox.shrink();
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  '$typingUsername is typing',
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _buildTypingDots(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildTypingDots() {
@@ -338,7 +309,7 @@ class MessagesView extends StackedView<MessagesViewModel> {
             children: [
               Icon(Icons.rule_folder, color: Colors.teal),
               SizedBox(width: 10),
-              Text('Community Guidelines'),
+              Text(' Guidelines'),
             ],
           ),
           content: SingleChildScrollView(
